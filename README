@@ -14,4 +14,4 @@ getIntersection(), getBBox(), and getCentroid() functions in order to be queryab
 The included example code renders a million spheres distributed inside of a cube using the BVH (in <3 seconds on my old MacBook!)   
 
 I have attempted to comment this code well and make everything well-understood. If there is an issue 
-with the code, or a question as to how something works, shoot me a message!
+with the code, a question as to how something works, or if you use this in a project, please let me know!
