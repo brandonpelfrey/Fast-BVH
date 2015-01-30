@@ -44,12 +44,21 @@ bool BVH::getIntersection(const Ray& ray, IntersectionInfo* intersection, bool o
   // Is leaf -> Intersect
   if( node.rightOffset == 0 ) {
    for(uint32_t o=0;o<node.nPrims;++o) {
-				const Object* obj = (*build_prims)[node.start+o];
-				bool hit = obj->getIntersection(ray, intersection);
+				IntersectionInfo current;
 
-				// If we're only looking for occlusion, then any hit is good enough
-				if(occlusion && hit) {
-					return true;
+				const Object* obj = (*build_prims)[node.start+o];
+				bool hit = obj->getIntersection(ray, &current);
+
+				if (hit) {
+					// If we're only looking for occlusion, then any hit is good enough
+					if(occlusion) {
+						return true;
+					}
+
+					// Otherwise, keep the closest intersection only
+					if (current.t < intersection->t) {
+						*intersection = current;
+					}
 				}
    }
 
