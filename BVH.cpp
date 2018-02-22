@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "Stopwatch.h"
 
+namespace pelfrey {
 //! Node for storing state information during traversal.
 struct BVHTraversal {
   uint32_t i; // Node
@@ -10,13 +11,14 @@ struct BVHTraversal {
   BVHTraversal() { }
   BVHTraversal(int _i, float _mint) : i(_i), mint(_mint) { }
 };
+}
 
 //! - Compute the nearest intersection of all objects within the tree.
 //! - Return true if hit was found, false otherwise.
 //! - In the case where we want to find out of there is _ANY_ intersection at all,
 //!   set occlusion == true, in which case we exit on the first hit, rather
 //!   than find the closest.
-bool BVH::getIntersection(const Ray& ray, IntersectionInfo* intersection, bool occlusion) const {
+bool pelfrey::BVH::getIntersection(const Ray& ray, IntersectionInfo* intersection, bool occlusion) const {
   intersection->t = 999999999.f;
   intersection->object = NULL;
   float bbhits[4];
@@ -109,11 +111,11 @@ bool BVH::getIntersection(const Ray& ray, IntersectionInfo* intersection, bool o
   return intersection->object != NULL;
 }
 
-BVH::~BVH() {
+pelfrey::BVH::~BVH() {
   delete[] flatTree;
 }
 
-BVH::BVH(std::vector<Object*>* objects, uint32_t leafSize)
+pelfrey::BVH::BVH(std::vector<Object*>* objects, uint32_t leafSize)
   : nNodes(0), nLeafs(0), leafSize(leafSize), build_prims(objects), flatTree(NULL) {
     Stopwatch sw;
 
@@ -125,12 +127,14 @@ BVH::BVH(std::vector<Object*>* objects, uint32_t leafSize)
     LOG_STAT("Built BVH (%d nodes, with %d leafs) in %d ms", nNodes, nLeafs, (int)(1000*constructionTime));
   }
 
+namespace pelfrey {
 struct BVHBuildEntry {
   // If non-zero then this is the index of the parent. (used in offsets)
   uint32_t parent;
   // The range of objects in the object list covered by this node.
   uint32_t start, end;
 };
+}
 
 /*! Build the BVH, given an input data set
  *  - Handling our own stack is quite a bit faster than the recursive style.
@@ -140,7 +144,7 @@ struct BVHBuildEntry {
  *    Untouched-1, and TouchedTwice).
  *  - The partition here was also slightly faster than std::partition.
  */
-void BVH::build()
+void pelfrey::BVH::build()
 {
   BVHBuildEntry todo[128];
   uint32_t stackptr = 0;

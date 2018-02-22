@@ -1,32 +1,32 @@
 #include "BBox.h"
 #include <algorithm>
 
-BBox::BBox(const Vector3& min, const Vector3& max)
+pelfrey::BBox::BBox(const Vector3& min, const Vector3& max)
   : min(min), max(max) { extent = max - min; }
 
-BBox::BBox(const Vector3& p)
+pelfrey::BBox::BBox(const Vector3& p)
   : min(p), max(p) { extent = max - min; }
 
-  void BBox::expandToInclude(const Vector3& p) {
-    min = ::min(min, p);
-    max = ::max(max, p);
+void pelfrey::BBox::expandToInclude(const Vector3& p) {
+    min = pelfrey::min(min, p);
+    max = pelfrey::max(max, p);
     extent = max - min;
   }
 
-void BBox::expandToInclude(const BBox& b) {
-  min = ::min(min, b.min);
-  max = ::max(max, b.max);
+void pelfrey::BBox::expandToInclude(const BBox& b) {
+  min = pelfrey::min(min, b.min);
+  max = pelfrey::max(max, b.max);
   extent = max - min;
 }
 
-uint32_t BBox::maxDimension() const {
+uint32_t pelfrey::BBox::maxDimension() const {
   uint32_t result = 0;
   if(extent.y > extent.x) result = 1;
   if(extent.z > extent.y) result = 2;
   return result;
 }
 
-float BBox::surfaceArea() const {
+float pelfrey::BBox::surfaceArea() const {
   return 2.f*( extent.x*extent.z + extent.x*extent.y + extent.y*extent.z );
 }
 
@@ -46,7 +46,7 @@ static const float flt_plus_inf = -logf(0);	// let's keep C and C++ compilers ha
 static const float __attribute__((aligned(16)))
   ps_cst_plus_inf[4] = {  flt_plus_inf,  flt_plus_inf,  flt_plus_inf,  flt_plus_inf },
   ps_cst_minus_inf[4] = { -flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf };
-bool BBox::intersect(const Ray& ray, float *tnear, float *tfar) const {
+bool pelfrey::BBox::intersect(const Ray& ray, float *tnear, float *tfar) const {
 
   // you may already have those values hanging around somewhere
   const __m128
