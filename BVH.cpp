@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <omp.h>
+#include <iostream>
 #include "BVH.h"
 #include "Log.h"
 #include "Stopwatch.h"
@@ -45,7 +47,10 @@ bool pelfrey::BVH::getIntersection(const Ray& ray, IntersectionInfo* intersectio
 
     // Is leaf -> Intersect
     if( node.rightOffset == 0 ) {
+      volatile bool flag=false;
+      #pragma omp parallel for shared(flag)
       for(uint32_t o=0;o<node.nPrims;++o) {
+        if(flag) continue; // skip in parallel for if one occlusion is enough
         IntersectionInfo current;
 
         const Object* obj = (*build_prims)[node.start+o];
@@ -54,7 +59,7 @@ bool pelfrey::BVH::getIntersection(const Ray& ray, IntersectionInfo* intersectio
         if (hit) {
           // If we're only looking for occlusion, then any hit is good enough
           if(occlusion) {
-            return true;
+            flag = true;
           }
 
           // Otherwise, keep the closest intersection only
@@ -63,7 +68,7 @@ bool pelfrey::BVH::getIntersection(const Ray& ray, IntersectionInfo* intersectio
           }
         }
       }
-
+      if(flag) return true;
     } else { // Not a leaf
 
       bool hitc0 = flatTree[ni+1].bbox.intersect(ray, bbhits, bbhits+1);
