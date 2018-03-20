@@ -16,3 +16,4 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-msse3")
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION 1.0)
