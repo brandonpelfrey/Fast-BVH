@@ -3,6 +3,8 @@
 
 #include <sys/time.h>
 
+
+namespace pelfrey {
 class Stopwatch {
   private:
     double start;
@@ -17,5 +19,5 @@ class Stopwatch {
     void reset() { start = _stopwatch(); }
     double read() const { return _stopwatch() - start; }
 };
-
+}
 #endif

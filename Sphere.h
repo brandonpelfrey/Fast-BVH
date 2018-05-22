@@ -4,6 +4,8 @@
 #include <cmath>
 #include "Object.h"
 
+
+namespace pelfrey {
 //! For the purposes of demonstrating the BVH, a simple sphere
 struct Sphere : public Object {
   Vector3 center; // Center of the sphere
@@ -43,4 +45,5 @@ struct Sphere : public Object {
 
 };
 
+}
 #endif

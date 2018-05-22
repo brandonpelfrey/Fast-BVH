@@ -5,6 +5,7 @@
 #include "Vector3.h"
 #include <stdint.h>
 
+namespace pelfrey {
 struct BBox {
   Vector3 min, max, extent;
   BBox() { }
@@ -17,5 +18,6 @@ struct BBox {
   uint32_t maxDimension() const;
   float surfaceArea() const;
 };
+}
 
 #endif

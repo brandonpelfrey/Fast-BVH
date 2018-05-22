@@ -9,8 +9,10 @@
 #include "Ray.h"
 
 //! Node descriptor for the flattened tree
+namespace pelfrey {
+
 struct BVHFlatNode {
-  BBox bbox;
+  pelfrey::BBox bbox;
   uint32_t start, nPrims, rightOffset;
 };
 
@@ -32,5 +34,7 @@ class BVH {
 
   ~BVH();
 };
+
+}
 
 #endif

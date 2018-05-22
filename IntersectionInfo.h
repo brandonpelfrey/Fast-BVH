@@ -1,6 +1,7 @@
 #ifndef IntersectionInfo_h_
 #define IntersectionInfo_h_
 
+namespace pelfrey {
 class Object;
 
 struct IntersectionInfo {
@@ -9,4 +10,5 @@ struct IntersectionInfo {
   Vector3 hit; // Location of the intersection
 };
 
+}
 #endif

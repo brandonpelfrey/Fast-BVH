@@ -7,6 +7,8 @@
 #include <pmmintrin.h>
 #include "Log.h"
 
+
+namespace pelfrey {
 // SSE Vector object
 struct Vector3 {
   // This is silly, but it still helps.
@@ -87,5 +89,5 @@ inline Vector3 normalize(const Vector3& in) {
 
   return _mm_mul_ps( a.m128, r );
 }
-
+}
 #endif
