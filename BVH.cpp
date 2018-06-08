@@ -155,7 +155,9 @@ void pelfrey::BVH::build()
   todo[stackptr].start = 0;
   todo[stackptr].end = build_prims->size();
   todo[stackptr].parent = 0xfffffffc;
-  stackptr++;
+  if (build_prims->size() != 0) {
+    stackptr++;
+  }
 
   BVHFlatNode node;
   std::vector<BVHFlatNode> buildnodes;
