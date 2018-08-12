@@ -3,6 +3,7 @@
 
 #include "BBox.h"
 #include <vector>
+#include <functional>
 #include <stdint.h>
 #include "Object.h"
 #include "IntersectionInfo.h"
@@ -30,7 +31,11 @@ class BVH {
 
   public:
   BVH(std::vector<Object*>* objects, uint32_t leafSize=4);
-  bool getIntersection(const Ray& ray, IntersectionInfo *intersection, bool occlusion) const ;
+
+  bool getIntersection(const Ray& ray,
+                       IntersectionInfo *intersection,
+                       bool occlusion,
+                       std::function<bool(const Object&, const Ray&, IntersectionInfo*)> cb_intersection={}) const;
 
   ~BVH();
 };

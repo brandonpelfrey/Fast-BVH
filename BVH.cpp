@@ -2,6 +2,7 @@
 #include "BVH.h"
 #include "Log.h"
 #include "Stopwatch.h"
+#include <functional>
 
 namespace pelfrey {
 //! Node for storing state information during traversal.
@@ -18,7 +19,10 @@ struct BVHTraversal {
 //! - In the case where we want to find out of there is _ANY_ intersection at all,
 //!   set occlusion == true, in which case we exit on the first hit, rather
 //!   than find the closest.
-bool pelfrey::BVH::getIntersection(const Ray& ray, IntersectionInfo* intersection, bool occlusion) const {
+bool pelfrey::BVH::getIntersection(const Ray& ray,
+                                   IntersectionInfo* intersection,
+                                   bool occlusion,
+                                   std::function<bool(const Object&, const Ray&, IntersectionInfo*)> cb_intersection) const {
   intersection->t = 999999999.f;
   intersection->object = NULL;
   float bbhits[4];
@@ -49,7 +53,12 @@ bool pelfrey::BVH::getIntersection(const Ray& ray, IntersectionInfo* intersectio
         IntersectionInfo current;
 
         const Object* obj = (*build_prims)[node.start+o];
-        bool hit = obj->getIntersection(ray, &current);
+        bool hit;
+        if (cb_intersection) {
+          hit = cb_intersection(*obj, ray, &current);
+        } else {
+          hit = obj->getIntersection(ray, &current);
+        }
 
         if (hit) {
           // If we're only looking for occlusion, then any hit is good enough
