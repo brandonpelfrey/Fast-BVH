@@ -22,6 +22,8 @@ struct Object {
 
   //! Return the centroid for this object. (Used in BVH Sorting)
   virtual Vector3 getCentroid() const = 0;
+
+  virtual ~Object() {}
 };
 }
 #endif
