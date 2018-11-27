@@ -7,11 +7,11 @@ BBox::BBox(const Vector3& min, const Vector3& max)
 BBox::BBox(const Vector3& p)
   : min(p), max(p) { extent = max - min; }
 
-  void BBox::expandToInclude(const Vector3& p) {
-    min = ::min(min, p);
-    max = ::max(max, p);
-    extent = max - min;
-  }
+void BBox::expandToInclude(const Vector3& p) {
+  min = ::min(min, p);
+  max = ::max(max, p);
+  extent = max - min;
+}
 
 void BBox::expandToInclude(const BBox& b) {
   min = ::min(min, b.min);
@@ -21,8 +21,11 @@ void BBox::expandToInclude(const BBox& b) {
 
 uint32_t BBox::maxDimension() const {
   uint32_t result = 0;
-  if(extent.y > extent.x) result = 1;
-  if(extent.z > extent.y) result = 2;
+  if(extent.y > extent.x) {
+    result = 1;
+    if(extent.z > extent.y) result = 2;
+  } else if(extent.z > extent.x) result = 2;
+  
   return result;
 }
 
