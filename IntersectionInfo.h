@@ -1,6 +1,9 @@
 #ifndef IntersectionInfo_h_
 #define IntersectionInfo_h_
 
+#include "Vector3.h"
+#include "Object.h"
+
 class Object;
 
 struct IntersectionInfo {
