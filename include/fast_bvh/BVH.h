@@ -14,10 +14,15 @@
 namespace FastBVH {
 
 //! Node descriptor for the flattened tree
+//! \tparam Float The floating point type
+//! used for the bounding box vectors.
 template <typename Float>
 struct BVHFlatNode final {
+  //! The bounding box of the node.
   BBox<Float> bbox;
+  //! The index of the first primitive.
   uint32_t start;
+  //! The number of primitives in this node.
   uint32_t nPrims;
   uint32_t rightOffset;
 };
@@ -26,20 +31,27 @@ struct BVHFlatNode final {
 //! A Bounding Volume Hierarchy system for fast Ray-Object intersection tests
 template <typename Float, typename Primitive>
 class BVH final {
+  //! The number of nodes in the BVH.
   uint32_t nNodes;
+  //! The number of leafs in the BVH.
   uint32_t nLeafs;
+  //! The number of primitives in a single leaf.
   uint32_t leafSize;
+  //! The array of primitives used to construct
+  //! the BVH.
   std::vector<Primitive> build_prims;
-
-  //! Build the BVH tree out of build_prims
-  void build();
-
-  // Fast Traversal System
+  //! An array of nodes used for fast iteration
+  //! of the BVH, using iteration.
   BVHFlatNode<Float> *flatTree;
-
-  public:
+public:
+  //! Constructs a new BVH instance.
+  //! \param objects The array of primitives to build the BVH for.
+  //! \param leafSize The number of primitives per leaf.
   BVH(std::vector<Primitive>&& objects, uint32_t leafSize=4);
-  ~BVH();
+  //! Releases memory allocated by the BVH.
+  ~BVH() {
+    delete[] flatTree;
+  }
   //! Accesses the BVH nodes.
   //! \return A pointer to the nodes in the BVH.
   inline const auto* getNodes() const noexcept {
@@ -55,26 +67,25 @@ class BVH final {
   inline const auto* getPrimitives() const noexcept {
     return build_prims.data();
   }
+protected:
+  //! Build the BVH tree out of build_prims
+  void build();
 };
-
-template <typename Float, typename Primitive>
-BVH<Float, Primitive>::~BVH() {
-  delete[] flatTree;
-}
 
 template <typename Float, typename Primitive>
 BVH<Float, Primitive>::BVH(std::vector<Primitive>&& objects, uint32_t leafSize)
   : nNodes(0), nLeafs(0), leafSize(leafSize), build_prims(std::move(objects)), flatTree(NULL) {
 
-    Stopwatch sw;
+  Stopwatch sw;
 
-    // Build the tree based on the input object data set.
-    build();
+  // Build the tree based on the input object data set.
+  build();
 
-    // Output tree build time and statistics
-    double constructionTime = sw.read();
-    LOG_STAT("Built BVH (%d nodes, with %d leafs) in %d ms", nNodes, nLeafs, (int)(1000*constructionTime));
-  }
+  // Output tree build time and statistics
+  double constructionTime = sw.read();
+
+  LOG_STAT("Built BVH (%d nodes, with %d leafs) in %d ms", nNodes, nLeafs, (int)(1000*constructionTime));
+}
 
 //! Contains the context used while building
 //! a specific node in the BVH.
