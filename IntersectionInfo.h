@@ -3,6 +3,8 @@
 #include "Vector3.h"
 #include "Object.h"
 
+namespace FastBVH {
+
 class Object;
 
 struct IntersectionInfo final {
@@ -10,3 +12,5 @@ struct IntersectionInfo final {
   const Object* object; // Object that was hit
   Vector3 hit; // Location of the intersection
 };
+
+} // namespace FastBVH

@@ -7,6 +7,8 @@
 #include "IntersectionInfo.h"
 #include "Ray.h"
 
+namespace FastBVH {
+
 //! Node descriptor for the flattened tree
 struct BVHFlatNode final {
   BBox bbox;
@@ -31,3 +33,5 @@ class BVH final {
 
   ~BVH();
 };
+
+} // namespace FastBVH

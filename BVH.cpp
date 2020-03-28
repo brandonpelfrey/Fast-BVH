@@ -3,6 +3,8 @@
 #include "Log.h"
 #include "Stopwatch.h"
 
+namespace FastBVH {
+
 //! Node for storing state information during traversal.
 struct BVHTraversal {
   uint32_t i; // Node
@@ -242,3 +244,4 @@ void BVH::build()
     flatTree[n] = buildnodes[n];
 }
 
+} // namespace FastBVH

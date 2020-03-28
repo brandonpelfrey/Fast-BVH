@@ -3,7 +3,10 @@
 #include <cstdlib>
 #include "BVH.h"
 #include "Sphere.h"
+
 using std::vector;
+
+using namespace FastBVH;
 
 // Return a random number in [0,1]
 float rand01() {

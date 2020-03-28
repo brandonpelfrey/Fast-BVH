@@ -6,6 +6,8 @@
 #include <pmmintrin.h>
 #include "Log.h"
 
+namespace FastBVH {
+
 // SSE Vector object
 struct Vector3 final {
   // This is silly, but it still helps.
@@ -86,3 +88,5 @@ inline Vector3 normalize(const Vector3& in) {
 
   return _mm_mul_ps( a.m128, r );
 }
+
+} // namespace FastBVH

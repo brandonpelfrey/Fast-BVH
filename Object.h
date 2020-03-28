@@ -4,6 +4,8 @@
 #include "Ray.h"
 #include "BBox.h"
 
+namespace FastBVH {
+
 struct Object {
   //! All "Objects" must be able to test for intersections with rays.
   virtual bool getIntersection(
@@ -20,3 +22,5 @@ struct Object {
   //! Return the centroid for this object. (Used in BVH Sorting)
   virtual Vector3 getCentroid() const = 0;
 };
+
+} // namespace FastBVH

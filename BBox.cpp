@@ -1,5 +1,8 @@
 #include "BBox.h"
+
 #include <algorithm>
+
+namespace FastBVH {
 
 BBox::BBox(const Vector3& min, const Vector3& max)
   : min(min), max(max) { extent = max - min; }
@@ -8,14 +11,14 @@ BBox::BBox(const Vector3& p)
   : min(p), max(p) { extent = max - min; }
 
 void BBox::expandToInclude(const Vector3& p) {
-  min = ::min(min, p);
-  max = ::max(max, p);
+  min = FastBVH::min(min, p);
+  max = FastBVH::max(max, p);
   extent = max - min;
 }
 
 void BBox::expandToInclude(const BBox& b) {
-  min = ::min(min, b.min);
-  max = ::max(max, b.max);
+  min = FastBVH::min(min, b.min);
+  max = FastBVH::max(max, b.max);
   extent = max - min;
 }
 
@@ -98,3 +101,5 @@ bool BBox::intersect(const Ray& ray, float *tnear, float *tfar) const {
 
   return  ret;
 }
+
+} // namespace FastBVH

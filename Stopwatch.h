@@ -2,6 +2,8 @@
 
 #include <sys/time.h>
 
+namespace FastBVH {
+
 class Stopwatch final {
   private:
     double start;
@@ -16,3 +18,5 @@ class Stopwatch final {
     void reset() { start = _stopwatch(); }
     double read() const { return _stopwatch() - start; }
 };
+
+} // namespace FastBVH

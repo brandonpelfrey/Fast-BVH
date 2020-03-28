@@ -3,6 +3,8 @@
 #include <cmath>
 #include "Object.h"
 
+namespace FastBVH {
+
 //! For the purposes of demonstrating the BVH, a simple sphere
 struct Sphere final : public Object {
   Vector3 center; // Center of the sphere
@@ -41,3 +43,5 @@ struct Sphere final : public Object {
   }
 
 };
+
+} // namespace FastBVH

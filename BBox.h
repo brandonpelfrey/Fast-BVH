@@ -4,6 +4,8 @@
 #include "Vector3.h"
 #include <stdint.h>
 
+namespace FastBVH {
+
 struct BBox final {
   Vector3 min, max, extent;
   BBox() { }
@@ -16,3 +18,5 @@ struct BBox final {
   uint32_t maxDimension() const;
   float surfaceArea() const;
 };
+
+} // namespace FastBVH
