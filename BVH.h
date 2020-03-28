@@ -9,14 +9,14 @@
 #include "Ray.h"
 
 //! Node descriptor for the flattened tree
-struct BVHFlatNode {
+struct BVHFlatNode final {
   BBox bbox;
   uint32_t start, nPrims, rightOffset;
 };
 
 //! \author Brandon Pelfrey
 //! A Bounding Volume Hierarchy system for fast Ray-Object intersection tests
-class BVH {
+class BVH final {
   uint32_t nNodes, nLeafs, leafSize;
   std::vector<Object*>* build_prims;
 

@@ -8,7 +8,7 @@
 #include "Log.h"
 
 // SSE Vector object
-struct Vector3 {
+struct Vector3 final {
   // This is silly, but it still helps.
   union __attribute__((aligned(16))) {
     struct { float x,y,z,w; };

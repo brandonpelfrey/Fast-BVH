@@ -5,7 +5,7 @@
 #include "Object.h"
 
 //! For the purposes of demonstrating the BVH, a simple sphere
-struct Sphere : public Object {
+struct Sphere final : public Object {
   Vector3 center; // Center of the sphere
   float r, r2; // Radius, Radius^2
 

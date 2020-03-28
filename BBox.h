@@ -5,7 +5,7 @@
 #include "Vector3.h"
 #include <stdint.h>
 
-struct BBox {
+struct BBox final {
   Vector3 min, max, extent;
   BBox() { }
   BBox(const Vector3& min, const Vector3& max);

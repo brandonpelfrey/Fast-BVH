@@ -3,7 +3,7 @@
 
 #include <sys/time.h>
 
-class Stopwatch {
+class Stopwatch final {
   private:
     double start;
     double _stopwatch() const
