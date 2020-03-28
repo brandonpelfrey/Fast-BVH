@@ -136,10 +136,11 @@ void BVH<Float, Primitive>::build() {
 
     // Calculate the bounding box for this node
     BBox<Float> bb(getBBox(build_prims[start]));
-    BBox<Float> bc(getCentroid(build_prims[start]));
+    BBox<Float> bc(bb.getCenter());
     for(uint32_t p = start+1; p < end; ++p) {
-      bb.expandToInclude(getBBox(build_prims[p]));
-      bc.expandToInclude(getCentroid(build_prims[p]));
+      auto box = getBBox(build_prims[p]);
+      bb.expandToInclude(box);
+      bc.expandToInclude(box.getCenter());
     }
     node.bbox = bb;
 
@@ -177,7 +178,8 @@ void BVH<Float, Primitive>::build() {
     // Partition the list of objects on this split
     uint32_t mid = start;
     for(uint32_t i=start;i<end;++i) {
-      if(getCentroid(build_prims[i])[split_dim] < split_coord ) {
+      auto box = getBBox(build_prims[i]);
+      if(box.getCenter()[split_dim] < split_coord ) {
         std::swap( build_prims[i], build_prims[mid] );
         ++mid;
       }

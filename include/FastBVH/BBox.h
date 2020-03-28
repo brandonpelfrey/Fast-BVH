@@ -59,6 +59,12 @@ struct BBox final {
     extent = max - min;
   }
 
+  //! Gets the center of the bounding box.
+  //! \return The center of the bounding box.
+  Vec3 getCenter() const noexcept {
+    return (max + min) * Float(0.5);
+  }
+
   //! Checks for intersection between a ray and the box.
   //! \param ray The ray being traced.
   //! \param tnear The scale to the nearest box hit.
