@@ -18,10 +18,18 @@ add_library(FastBVH INTERFACE)
 
 target_include_directories(FastBVH INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-add_executable(FastBVH_RayTracerTest RayTracerTest.cpp)
+function(add_example name)
 
-target_link_libraries(FastBVH_RayTracerTest PRIVATE FastBVH)
+  set(target FastBVH_Example_${name})
 
-target_compile_options(FastBVH_RayTracerTest PRIVATE ${cxxflags})
+  add_executable(${target} ${ARGN})
 
-set_target_properties(FastBVH_RayTracerTest PROPERTIES OUTPUT_NAME RayTracerTest)
+  target_link_libraries(${target} PRIVATE FastBVH)
+
+  target_compile_options(${target} PRIVATE ${cxxflags})
+
+  set_target_properties(${target} PROPERTIES OUTPUT_NAME ${name})
+
+endfunction(add_example name)
+
+add_example(Basic examples/Basic.cpp)
