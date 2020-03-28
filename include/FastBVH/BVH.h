@@ -46,11 +46,30 @@ class BVH final {
   std::vector<BVHFlatNode<Float>> flatTree;
 public:
   //! Constructs a new BVH instance.
-  //! \param objects The array of primitives to build the BVH for.
+  BVH() : nLeafs(0), leafSize(4) {}
+  //! Builds the BVH. This function may be called more than once.
+  //! At each call to this function, the nodes in the BVH are cleared
+  //! and then remade based on the new data.
+  //! \param objects The primitives to build the BVH from.
   //! \param leafSize The number of primitives per leaf.
-  BVH(std::vector<Primitive>&& objects, uint32_t leafSize=4);
-  //! Releases memory allocated by the BVH.
-  ~BVH() {
+  void build(std::vector<Primitive>&& objects, uint32_t leafSize = 4) {
+
+    this->nLeafs = 0;
+    this->leafSize = leafSize;
+    this->build_prims = std::move(objects);
+    this->flatTree.clear();
+
+    Stopwatch sw;
+
+    this->build();
+
+    // Output tree build time and statistics
+    double constructionTime = sw.read();
+
+    LOG_STAT("Built BVH (%u nodes, with %u leafs) in %.02f ms",
+             (unsigned int) flatTree.size(),
+             (unsigned int) nLeafs,
+             1000.0 * constructionTime);
   }
   //! Accesses the BVH nodes.
   //! \return A pointer to the nodes in the BVH.
@@ -71,24 +90,6 @@ protected:
   //! Build the BVH tree out of build_prims
   void build();
 };
-
-template <typename Float, typename Primitive>
-BVH<Float, Primitive>::BVH(std::vector<Primitive>&& objects, uint32_t leafSize)
-  : nLeafs(0), leafSize(leafSize), build_prims(std::move(objects)) {
-
-  Stopwatch sw;
-
-  // Build the tree based on the input object data set.
-  build();
-
-  // Output tree build time and statistics
-  double constructionTime = sw.read();
-
-  LOG_STAT("Built BVH (%u nodes, with %u leafs) in %.02f ms",
-           (unsigned int) flatTree.size(),
-           (unsigned int) nLeafs,
-           1000.0 * constructionTime);
-}
 
 //! \brief Contains the context used while building
 //! a specific node in the BVH.

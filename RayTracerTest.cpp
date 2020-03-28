@@ -33,8 +33,10 @@ int main() {
     objects.emplace_back(Sphere<float>(randVector3(), .005f));
   }
 
+  BVH<float, Sphere<float>> bvh;
+
   // Compute a BVH for this object set
-  BVH<float, Sphere<float>> bvh(std::move(objects));
+  bvh.build(std::move(objects));
 
   // Allocate space for some image pixels
   const unsigned int width=800, height=800;
