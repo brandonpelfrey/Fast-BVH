@@ -3,6 +3,7 @@
 #include <cstdlib>
 
 #include <fast_bvh/BVH.h>
+#include <fast_bvh/Traverser.h>
 
 #include "Sphere.h"
 
@@ -47,6 +48,8 @@ int main() {
   Vector3<float> camera_u = normalize(camera_dir ^ camera_up);
   Vector3<float> camera_v = normalize(camera_u ^ camera_dir);
 
+  Traverser<float> traverser(bvh);
+
   printf("Rendering image (%dx%d)...\n", width, height);
   // Raytrace over every pixel
   for(size_t i=0; i<width; ++i) {
@@ -62,7 +65,7 @@ int main() {
 
       IntersectionInfo<float> I;
 
-      bool hit = bvh.getIntersection(ray, &I, false);
+      bool hit = traverser.getIntersection(ray, &I, false);
 
       if(!hit) {
         pixels[index] = pixels[index+1] = pixels[index+2] = 0.f;
