@@ -76,25 +76,30 @@ BVH<Float, Primitive>::BVH(std::vector<Primitive>&& objects, uint32_t leafSize)
     LOG_STAT("Built BVH (%d nodes, with %d leafs) in %d ms", nNodes, nLeafs, (int)(1000*constructionTime));
   }
 
-struct BVHBuildEntry final {
-  // If non-zero then this is the index of the parent. (used in offsets)
+//! Contains the context used while building
+//! a specific node in the BVH.
+struct BuildEntry final {
+  //! If non-zero then this is the index of the parent. (used in offsets)
   uint32_t parent;
-  // The range of objects in the object list covered by this node.
-  uint32_t start, end;
+  //! The starting index of the range of primitives in this node.
+  uint32_t start;
+  //! The ending index of the range of primitives in this node.
+  uint32_t end;
 };
 
-/*! Build the BVH, given an input data set
- *  - Handling our own stack is quite a bit faster than the recursive style.
- *  - Each build stack entry's parent field eventually stores the offset
- *    to the parent of that node. Before that is finally computed, it will
- *    equal exactly three other values. (These are the magic values Untouched,
- *    Untouched-1, and TouchedTwice).
- *  - The partition here was also slightly faster than std::partition.
- */
+//! Build the BVH, given an input data set
+//! - Handling our own stack is quite a bit faster than the recursive style.
+//! - Each build stack entry's parent field eventually stores the offset
+//!   to the parent of that node. Before that is finally computed, it will
+//!   equal exactly three other values. (These are the magic values Untouched,
+//!   Untouched-1, and TouchedTwice).
+//! - The partition here was also slightly faster than std::partition.
+//! \tparam Float The floating point type used in the BVH vectors.
+//! \tparam Primtive The type of the primtive in the BVH.
 template <typename Float, typename Primitive>
-void BVH<Float, Primitive>::build()
-{
-  BVHBuildEntry todo[128];
+void BVH<Float, Primitive>::build() {
+
+  BuildEntry todo[128];
   uint32_t stackptr = 0;
   const uint32_t Untouched    = 0xffffffff;
   const uint32_t TouchedTwice = 0xfffffffd;
@@ -111,7 +116,7 @@ void BVH<Float, Primitive>::build()
 
   while(stackptr > 0) {
     // Pop the next item off of the stack
-    BVHBuildEntry &bnode( todo[--stackptr] );
+    BuildEntry &bnode( todo[--stackptr] );
     uint32_t start = bnode.start;
     uint32_t end = bnode.end;
     uint32_t nPrims = end - start;

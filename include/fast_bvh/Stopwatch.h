@@ -4,8 +4,9 @@
 
 namespace FastBVH {
 
+//! Used for profiling the performance
+//! of the BVH construction.
 class Stopwatch final {
-  private:
     double start;
     double _stopwatch() const
     {

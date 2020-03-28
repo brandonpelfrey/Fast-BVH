@@ -4,14 +4,24 @@
 
 namespace FastBVH {
 
+//! A type-generic 3 dimensional vector.
+//! Used for the representation of bounding volumes
+//! as well as the representation of rays and intersections.
+//! \tparam Float The type used for the vector components.
 template <typename Float>
 struct Vector3 final {
 
+  //! The X component of the vector.
   Float x;
+  //! The Y component of the vector.
   Float y;
+  //! The Z component of the vector.
   Float z;
+  //! This is an used component, used
+  //! for padding and SSE compatibility.
   Float w = 1;
 
+  //! Adds two vectors.
   Vector3 operator+(const Vector3& b) const noexcept {
     return Vector3 {
       x + b.x,
@@ -21,6 +31,7 @@ struct Vector3 final {
     };
   }
 
+  //! Subtracts two vectors.
   Vector3 operator-(const Vector3& b) const noexcept {
     return Vector3 {
       x - b.x,
@@ -30,6 +41,7 @@ struct Vector3 final {
     };
   }
 
+  //! Multiplies the vector by a scalar value.
   Vector3 operator*(Float b) const noexcept {
     return Vector3 {
       x * b,
@@ -39,6 +51,7 @@ struct Vector3 final {
     };
   }
 
+  //! Divides the vector by a scalar value.
   Vector3 operator/(Float b) const noexcept {
     return Vector3 {
       x / b,
@@ -48,6 +61,8 @@ struct Vector3 final {
     };
   }
 
+  //! Component-wise vector multiplication.
+  //! This is also called the hadamard product.
   Vector3 cmul(const Vector3& b) const noexcept {
     return Vector3 {
       x * b.x,
@@ -57,6 +72,7 @@ struct Vector3 final {
     };
   }
 
+  //! Component-wise vector division.
   Vector3 cdiv(const Vector3& b) const noexcept {
     return Vector3 {
       x / b.x,
@@ -66,14 +82,14 @@ struct Vector3 final {
     };
   }
 
-  // dot (inner) product
+  //! Computes the dot product between two vectors.
   Float operator*(const Vector3& b) const noexcept {
     return (x * b.x)
          + (y * b.y)
          + (z * b.z);
   }
 
-  // Cross Product
+  //! Computes the cross product of two vectors.
   Vector3 operator^(const Vector3& b) const noexcept {
     return Vector3 {
       (y * b.z) - (z * b.y),
@@ -82,6 +98,7 @@ struct Vector3 final {
     };
   }
 
+  /// Component-wise vector division.
   Vector3 operator / (const Vector3& b) const noexcept {
     return Vector3 {
       x / b.x,
@@ -91,17 +108,19 @@ struct Vector3 final {
     };
   }
 
-  // Handy component indexing
+  //! Accesses a vector component by its index.
   inline Float& operator[](const unsigned int i) {
     return (&x)[i];
   }
 
+  //! Accesses a vector component by its index.
   inline const Float& operator[](const unsigned int i) const noexcept {
     return (&x)[i];
   }
 };
 
-// Component-wise min
+//! Calculates all minimum values between two vectors.
+//! \tparam Float The floating point type of the vector.
 template <typename Float>
 inline Vector3<Float> min(const Vector3<Float>& a,
                           const Vector3<Float>& b) noexcept {
@@ -114,7 +133,8 @@ inline Vector3<Float> min(const Vector3<Float>& a,
   };
 }
 
-// Component-wise max
+//! Calculates all maximum values between two vectors.
+//! \tparam Float The floating point type of the vector.
 template <typename Float>
 inline Vector3<Float> max(const Vector3<Float>& a,
                           const Vector3<Float>& b) noexcept {
@@ -127,15 +147,21 @@ inline Vector3<Float> max(const Vector3<Float>& a,
   };
 }
 
-// Length of a vector
+//! Computes the length of a vector.
+//! \tparam Float The floating point type of the vector.
+//! \param a The vector to compute the length of.
+//! \return The length of @p a.
 template <typename Float>
-inline Float length(const Vector3<Float>& a) {
+inline Float length(const Vector3<Float>& a) noexcept {
   return std::sqrt(a * a);
 }
 
-// Make a vector unit length
+//! Divides a vector by it's length, making its magnitude equal to one.
+//! \tparam Float The floating point type of the vector.
+//! \param in The vector to normalize.
+//! \return The normalized copy of @p in.
 template <typename Float>
-inline Vector3<Float> normalize(const Vector3<Float>& in) {
+inline Vector3<Float> normalize(const Vector3<Float>& in) noexcept {
   return in * (1.0f / length(in));
 }
 
