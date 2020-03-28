@@ -6,20 +6,22 @@
 namespace FastBVH {
 
 //! For the purposes of demonstrating the BVH, a simple sphere
-struct Sphere final : public Object {
-  Vector3 center; // Center of the sphere
-  float r, r2; // Radius, Radius^2
+template <typename Float>
+struct Sphere final : public Object<Float> {
+  Vector3<Float> center; // Center of the sphere
+  Float r, r2; // Radius, Radius^2
 
-  Sphere(const Vector3& center, float radius)
+  Sphere(const Vector3<Float>& center, Float radius)
     : center(center), r(radius), r2(radius*radius) { }
 
-  bool getIntersection(const Ray& ray, IntersectionInfo* I) const {
-    Vector3 s = center - ray.o;
-    float sd = s * ray.d;
-    float ss = s * s;
+  bool getIntersection(const Ray<Float>& ray, IntersectionInfo<Float>* I) const noexcept override {
+
+    auto s = center - ray.o;
+    auto sd = s * ray.d;
+    auto ss = s * s;
 
     // Compute discriminant
-    float disc = sd*sd - ss + r2;
+    Float disc = sd*sd - ss + r2;
 
     // Complex values: No intersection
     if( disc < 0.f ) return false;
@@ -30,18 +32,18 @@ struct Sphere final : public Object {
     return true;
   }
 
-  Vector3 getNormal(const IntersectionInfo& I) const {
+  Vector3<Float> getNormal(const IntersectionInfo<Float>& I) const noexcept override {
     return normalize(I.hit - center);
   }
 
-  BBox getBBox() const {
-    return BBox(center-Vector3 { r, r, r }, center + Vector3 { r, r, r });
+  BBox<Float> getBBox() const noexcept override {
+    return BBox<Float>(center - Vector3<Float> { r, r, r },
+                       center + Vector3<Float> { r, r, r });
   }
 
-  Vector3 getCentroid() const {
+  Vector3<Float> getCentroid() const noexcept override {
     return center;
   }
-
 };
 
 } // namespace FastBVH

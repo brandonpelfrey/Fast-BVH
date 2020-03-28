@@ -14,36 +14,36 @@ float rand01() {
 }
 
 // Return a random vector with each component in the range [-1,1]
-Vector3 randVector3() {
-  return Vector3 { rand01(), rand01(), rand01() } * 2.0f - Vector3 { 1, 1, 1 };
+Vector3<float> randVector3() {
+  return Vector3<float> { rand01(), rand01(), rand01() } * 2.0f - Vector3<float> { 1, 1, 1 };
 }
 
 int main() {
 
   // Create a million spheres packed in the space of a cube
   const unsigned int N = 1000000;
-  vector<Object*> objects;
+  vector<Object<float>*> objects;
   printf("Constructing %d spheres...\n", N);
   for(size_t i=0; i<N; ++i) {
-    objects.push_back(new Sphere(randVector3(), .005f));
+    objects.push_back(new Sphere<float>(randVector3(), .005f));
   }
 
   // Compute a BVH for this object set
-  BVH bvh(&objects);
+  BVH<float> bvh(&objects);
 
   // Allocate space for some image pixels
   const unsigned int width=800, height=800;
   float* pixels = new float[width*height*3];
 
   // Create a camera from position and focus point
-  Vector3 camera_position { 1.6, 1.3, 1.6 };
-  Vector3 camera_focus { 0,0,0 };
-  Vector3 camera_up { 0,1,0 };
+  Vector3<float> camera_position { 1.6, 1.3, 1.6 };
+  Vector3<float> camera_focus { 0,0,0 };
+  Vector3<float> camera_up { 0,1,0 };
 
   // Camera tangent space
-  Vector3 camera_dir = normalize(camera_focus - camera_position);
-  Vector3 camera_u = normalize(camera_dir ^ camera_up);
-  Vector3 camera_v = normalize(camera_u ^ camera_dir);
+  Vector3<float> camera_dir = normalize(camera_focus - camera_position);
+  Vector3<float> camera_u = normalize(camera_dir ^ camera_up);
+  Vector3<float> camera_v = normalize(camera_u ^ camera_dir);
 
   printf("Rendering image (%dx%d)...\n", width, height);
   // Raytrace over every pixel
@@ -56,9 +56,10 @@ int main() {
       float fov = .5f / tanf( 70.f * 3.14159265*.5f / 180.f);
 
       // This is only valid for square aspect ratio images
-      Ray ray(camera_position, normalize(camera_u*u + camera_v*v + camera_dir*fov));
+      Ray<float> ray(camera_position, normalize(camera_u*u + camera_v*v + camera_dir*fov));
 
-      IntersectionInfo I;
+      IntersectionInfo<float> I;
+
       bool hit = bvh.getIntersection(ray, &I, false);
 
       if(!hit) {
@@ -66,9 +67,9 @@ int main() {
       } else {
 
         // Just for fun, we'll make the color based on the normal
-        const Vector3 normal = I.object->getNormal(I);
+        const Vector3<float> normal = I.object->getNormal(I);
 
-        const Vector3 color {
+        const Vector3<float> color {
           std::fabs(normal.x),
           std::fabs(normal.y),
           std::fabs(normal.z)

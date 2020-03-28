@@ -4,12 +4,13 @@
 
 namespace FastBVH {
 
+template <typename Float = float>
 struct Vector3 final {
 
-  float x;
-  float y;
-  float z;
-  float w = 1;
+  Float x;
+  Float y;
+  Float z;
+  Float w = 1;
 
   Vector3 operator+(const Vector3& b) const noexcept {
     return Vector3 {
@@ -29,7 +30,7 @@ struct Vector3 final {
     };
   }
 
-  Vector3 operator*(float b) const noexcept {
+  Vector3 operator*(Float b) const noexcept {
     return Vector3 {
       x * b,
       y * b,
@@ -38,7 +39,7 @@ struct Vector3 final {
     };
   }
 
-  Vector3 operator/(float b) const noexcept {
+  Vector3 operator/(Float b) const noexcept {
     return Vector3 {
       x / b,
       y / b,
@@ -66,7 +67,7 @@ struct Vector3 final {
   }
 
   // dot (inner) product
-  float operator*(const Vector3& b) const noexcept {
+  Float operator*(const Vector3& b) const noexcept {
     return (x * b.x)
          + (y * b.y)
          + (z * b.z);
@@ -91,18 +92,21 @@ struct Vector3 final {
   }
 
   // Handy component indexing
-  float& operator[](const unsigned int i) {
+  inline Float& operator[](const unsigned int i) {
     return (&x)[i];
   }
 
-  const float& operator[](const unsigned int i) const {
+  inline const Float& operator[](const unsigned int i) const noexcept {
     return (&x)[i];
   }
 };
 
 // Component-wise min
-inline Vector3 min(const Vector3& a, const Vector3& b) {
-  return Vector3 {
+template <typename Float>
+inline Vector3<Float> min(const Vector3<Float>& a,
+                          const Vector3<Float>& b) noexcept {
+
+  return Vector3<Float> {
     std::fmin(a.x, b.x),
     std::fmin(a.y, b.y),
     std::fmin(a.z, b.z),
@@ -111,8 +115,11 @@ inline Vector3 min(const Vector3& a, const Vector3& b) {
 }
 
 // Component-wise max
-inline Vector3 max(const Vector3& a, const Vector3& b) {
-  return Vector3 {
+template <typename Float>
+inline Vector3<Float> max(const Vector3<Float>& a,
+                          const Vector3<Float>& b) noexcept {
+
+  return Vector3<Float> {
     std::fmax(a.x, b.x),
     std::fmax(a.y, b.y),
     std::fmax(a.z, b.z),
@@ -121,12 +128,14 @@ inline Vector3 max(const Vector3& a, const Vector3& b) {
 }
 
 // Length of a vector
-inline float length(const Vector3& a) {
+template <typename Float>
+inline Float length(const Vector3<Float>& a) {
   return std::sqrt(a * a);
 }
 
 // Make a vector unit length
-inline Vector3 normalize(const Vector3& in) {
+template <typename Float>
+inline Vector3<Float> normalize(const Vector3<Float>& in) {
   return in * (1.0f / length(in));
 }
 

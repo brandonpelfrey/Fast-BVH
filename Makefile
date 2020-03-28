@@ -1,4 +1,4 @@
-CXXFLAGS := -Wall -Wextra -Werror -Wfatal-errors -msse3
+CXXFLAGS := -Wall -Wextra -Werror -Wfatal-errors
 
 .PHONY: all
 all: simple-target
@@ -6,7 +6,7 @@ all: simple-target
 .PHONY: simple-target
 simple-target: RayTracerTest
 
-RayTracerTest: RayTracerTest.o BBox.o BVH.o
+RayTracerTest: RayTracerTest.o
 	$(CXX) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 RayTracerTest.o: RayTracerTest.cpp BVH.h BBox.h Ray.h Vector3.h Log.h \

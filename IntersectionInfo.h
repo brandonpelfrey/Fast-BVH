@@ -5,12 +5,14 @@
 
 namespace FastBVH {
 
-class Object;
+template <typename Float>
+struct Object;
 
+template <typename Float>
 struct IntersectionInfo final {
-  float t; // Intersection distance along the ray
-  const Object* object; // Object that was hit
-  Vector3 hit; // Location of the intersection
+  Float t; // Intersection distance along the ray
+  const Object<Float>* object; // Object that was hit
+  Vector3<Float> hit; // Location of the intersection
 };
 
 } // namespace FastBVH
