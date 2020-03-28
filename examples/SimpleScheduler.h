@@ -17,6 +17,12 @@ class SimpleScheduler final {
   std::size_t img_x_res;
   //! The height of the image to produce.
   std::size_t img_y_res;
+  //! The position of the camera in world space.
+  Vector3<Float> camera_position { 1.6, 1.3, 1.6 };
+  //! Where the camera is looking at.
+  Vector3<Float> camera_focus { 0,0,0 };
+  //! The direction of 'up' in camera space.
+  Vector3<Float> camera_up { 0,1,0 };
 public:
   //! Constructs a new scheduler.
   //! \param img_w The width of the image to produce.
@@ -26,16 +32,16 @@ public:
     img_x_res = img_w;
     img_y_res = img_h;
   }
+  //! Moves the camera to a different location.
+  //! \param pos The position, in world space, to move the camera to.
+  void moveCamera(const Vector3<Float>& pos) {
+    camera_position = pos;
+  }
   //! Schedules rays to be traced.
   //! \tparam Tracer The type of the tracer kernel.
   //! \param tracer The tracer kernel that maps rays to colors.
   template <typename Tracer>
   void schedule(Tracer tracer) {
-
-    // Create a camera from position and focus point
-    Vector3<Float> camera_position { 1.6, 1.3, 1.6 };
-    Vector3<Float> camera_focus { 0,0,0 };
-    Vector3<Float> camera_up { 0,1,0 };
 
     // Camera tangent space
     Vector3<Float> camera_dir = normalize(camera_focus - camera_position);

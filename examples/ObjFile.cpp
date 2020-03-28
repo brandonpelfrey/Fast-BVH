@@ -1,12 +1,14 @@
 #include <FastBVH/BVH.h>
 #include <FastBVH/Traverser.h>
 
+#include <algorithm>
 #include <vector>
 
 #include <cstdio>
 #include <cstdlib>
 
 #include "Log.h"
+#include "SimpleScheduler.h"
 #include "Stopwatch.h"
 
 #include "tiny_obj_loader.h"
@@ -24,47 +26,195 @@ struct Face final {
 };
 
 //! \brief Converts a face into a bounding box.
+//! Used by @ref FaceBVH::BVH during the build process.
 class FaceBoxConverter final {
-  //! Contains all the vertices from the .obj file.
-  //! Used to find the bounding box of a face.
-  const tinyobj::attrib_t& attrib;
+  /// The minimum X values of the mesh faces.
+  std::vector<float> min_x;
+  /// The minimum Y values of the mesh faces.
+  std::vector<float> min_y;
+  /// The minimum Z values of the mesh faces.
+  std::vector<float> min_z;
+  /// The maximum X values of the mesh faces.
+  std::vector<float> max_x;
+  /// The maximum Y values of the mesh faces.
+  std::vector<float> max_y;
+  /// The maximum Z values of the mesh faces.
+  std::vector<float> max_z;
 public:
   //! Constructs a new instance of the box converter.
-  //! @param attrib_ Used to resolve the face indices
+  //! \param attrib Used to resolve the face indices
   //! into points that can be used to determine the
   //! bounding box of a face.
-  FaceBoxConverter(const tinyobj::attrib_t& attrib_)
-    : attrib(attrib_) {}
-  //! Converts a face to a bounding box.
-  //! \param face The face to get the bounding box of.
-  //! \return The bounding box that fits the specified face.
-  FastBVH::BBox<float> operator () (const Face& face) const noexcept {
+  //! \param faces The faces of the mesh.
+  FaceBoxConverter(const tinyobj::attrib_t& attrib, const std::vector<Face>& faces) {
 
-    FastBVH::Vector3<float> pos_a = {
+    min_x.resize(faces.size());
+    min_y.resize(faces.size());
+    min_z.resize(faces.size());
+
+    max_x.resize(faces.size());
+    max_y.resize(faces.size());
+    max_z.resize(faces.size());
+
+    for (std::size_t i = 0; i < faces.size(); i++) {
+
+      const auto& face = faces[i];
+
+      FastBVH::Vector3<float> pos_a = {
+        attrib.vertices[(face.pos[0] * 3) + 0],
+        attrib.vertices[(face.pos[0] * 3) + 1],
+        attrib.vertices[(face.pos[0] * 3) + 2]
+      };
+
+      FastBVH::Vector3<float> pos_b = {
+        attrib.vertices[(face.pos[1] * 3) + 0],
+        attrib.vertices[(face.pos[1] * 3) + 1],
+        attrib.vertices[(face.pos[1] * 3) + 2]
+      };
+
+      FastBVH::Vector3<float> pos_c = {
+        attrib.vertices[(face.pos[2] * 3) + 0],
+        attrib.vertices[(face.pos[2] * 3) + 1],
+        attrib.vertices[(face.pos[2] * 3) + 2]
+      };
+
+      auto min = FastBVH::min(pos_a, pos_b);
+      auto max = FastBVH::max(pos_a, pos_b);
+
+      min = FastBVH::min(min, pos_c);
+      max = FastBVH::max(max, pos_c);
+
+      min_x[i] = min.x;
+      min_y[i] = min.y;
+      min_z[i] = min.z;
+
+      max_x[i] = max.x;
+      max_y[i] = max.y;
+      max_z[i] = max.z;
+    }
+  }
+  //! Converts a face to a bounding box.
+  //! \param face_index The index of the face to get the bounding box of.
+  //! \return The bounding box that fits the specified face.
+  FastBVH::BBox<float> operator () (std::size_t face_index) const noexcept {
+
+    FastBVH::Vector3<float> min {
+      min_x[face_index],
+      min_y[face_index],
+      min_z[face_index],
+    };
+
+    FastBVH::Vector3<float> max {
+      max_x[face_index],
+      max_y[face_index],
+      max_z[face_index],
+    };
+
+    return FastBVH::BBox<float>(min, max);
+  }
+};
+
+//! \brief Checks for intersection between a ray and a face.
+//! Used by @ref FaceBVH::Traverse during BVH traversal.
+class FaceIntersector final {
+  //! Contains the object file vertices and texture coordinates.
+  const tinyobj::attrib_t& attrib;
+  //! The faces in the object file.
+  const std::vector<Face>& faces;
+public:
+  //! \brief Constructs a new instance of a face intersector.
+  //! Normally, at this point, we'd pre-compute some more acceleration data,
+  //! but we're going to keep this example short and sweet.
+  FaceIntersector(const tinyobj::attrib_t& attrib_, const std::vector<Face>& faces_)
+    : attrib(attrib_), faces(faces_) { }
+
+  FastBVH::Intersection<float, uint32_t> operator () (uint32_t face_index, const FastBVH::Ray<float>& ray) const noexcept {
+
+    const auto& face = faces[face_index];
+
+    FastBVH::Vector3<float> v0 = {
       attrib.vertices[(face.pos[0] * 3) + 0],
       attrib.vertices[(face.pos[0] * 3) + 1],
       attrib.vertices[(face.pos[0] * 3) + 2]
     };
 
-    FastBVH::Vector3<float> pos_b = {
+    FastBVH::Vector3<float> v1 = {
       attrib.vertices[(face.pos[1] * 3) + 0],
       attrib.vertices[(face.pos[1] * 3) + 1],
       attrib.vertices[(face.pos[1] * 3) + 2]
     };
 
-    FastBVH::Vector3<float> pos_c = {
+    FastBVH::Vector3<float> v2 = {
       attrib.vertices[(face.pos[2] * 3) + 0],
       attrib.vertices[(face.pos[2] * 3) + 1],
       attrib.vertices[(face.pos[2] * 3) + 2]
     };
 
-    auto min = FastBVH::min(pos_a, pos_b);
-    auto max = FastBVH::max(pos_a, pos_b);
+    // Basic Möller and Trumbore algorithm
 
-    min = FastBVH::min(min, pos_c);
-    max = FastBVH::max(max, pos_c);
+    auto v0v1 = v1 - v0;
+    auto v0v2 = v2 - v0;
 
-    return FastBVH::BBox<float>(min, max);
+    auto pvec = cross(ray.d, v0v2);
+
+    auto det = dot(v0v1, pvec);
+
+    if (std::fabs(det) < std::numeric_limits<float>::epsilon()) {
+      return FastBVH::Intersection<float, uint32_t>{};
+    }
+
+    auto inv_det = 1.0f / det;
+
+    auto tvec = ray.o - v0;
+
+    auto u = dot(tvec, pvec) * inv_det;
+
+    if ((u < 0) || (u > 1)) {
+      return FastBVH::Intersection<float, uint32_t>{};
+    }
+
+    auto qvec = cross(tvec, v0v1);
+
+    auto v = dot(ray.d, qvec) * inv_det;
+
+    if ((v < 0) || (u + v) > 1) {
+      return FastBVH::Intersection<float, uint32_t>{};
+    }
+
+    auto t = dot(v0v2, qvec) * inv_det;
+
+    // At this point, we know we have a hit.
+    // We just need to calculate the UV coordinates.
+
+    float uv[2] = { u, v };
+
+    // Some .obj files don't have texture coordinates.
+    // Ideally, we'd check this outside side of an intersector.
+    // For this example, it'll have to do.
+
+    if (attrib.texcoords.size() > 0) {
+
+      int vt0i[2] = { (face.uv[0] * 2) + 0, (face.uv[0] * 2) + 1 };
+      int vt1i[2] = { (face.uv[1] * 2) + 0, (face.uv[1] * 2) + 1 };
+      int vt2i[2] = { (face.uv[2] * 2) + 0, (face.uv[2] * 2) + 1 };
+
+      float vt0[2] = { attrib.texcoords[vt0i[0]], attrib.texcoords[vt0i[1]] };
+      float vt1[2] = { attrib.texcoords[vt1i[0]], attrib.texcoords[vt1i[1]] };
+      float vt2[2] = { attrib.texcoords[vt2i[0]], attrib.texcoords[vt2i[1]] };
+
+      uv[0] = vt0[0] * (1.0f - u - v);
+      uv[1] = vt0[1] * (1.0f - u - v);
+
+      uv[0] += vt1[0] * u;
+      uv[1] += vt1[1] * u;
+
+      uv[0] += vt2[0] * v;
+      uv[1] += vt2[1] * v;
+    }
+
+    return FastBVH::Intersection<float, uint32_t> {
+      t, &face_index, { 0, 0, 1 }, { uv[0], uv[1] }
+    };
   }
 };
 
@@ -96,6 +246,30 @@ std::vector<Face> combineFaces(const std::vector<tinyobj::shape_t>& shapes) {
   return faces;
 }
 
+//! Finds a good place for the camera to view the object.
+//! \param bvh The BVH containing the object primitives.
+//! \return A position in world space to place the camera at.
+FastBVH::Vector3<float> findGoodCameraPosition(const FastBVH::BVH<float, uint32_t>& bvh) {
+
+  FastBVH::Vector3<float> pos { 0, 0, -1 };
+
+  if (!bvh.getNodeCount()) {
+    return pos;
+  }
+
+  const auto& root_node = bvh.getNodes()[0];
+
+  const auto& root_box = root_node.bbox;
+
+  auto diagonal_length = length(root_box.extent);
+
+  pos.x = diagonal_length * 0.3;
+  pos.y = diagonal_length * 0.8;
+  pos.z = diagonal_length * 0.9;
+
+  return pos;
+}
+
 } // namespace
 
 int main(int argc, char** argv) {
@@ -124,107 +298,54 @@ int main(int argc, char** argv) {
 
   auto faces = combineFaces(reader.GetShapes());
 
+  std::vector<std::uint32_t> face_indices;
+
+  face_indices.resize(faces.size());
+
+  for (std::size_t i = 0; i < face_indices.size(); i++) {
+    face_indices[i] = std::uint32_t(i);
+  }
+
   std::printf("Building BVH\n");
-
-  FaceBoxConverter boxConverter(reader.GetAttrib());
-
-  FastBVH::BVH<float, Face> bvh;
 
   FastBVH::Stopwatch stopwatch;
 
-  bvh.build(std::move(faces), boxConverter);
+  FaceBoxConverter boxConverter(reader.GetAttrib(), faces);
+
+  FastBVH::BVH<float, std::uint32_t> bvh;
+
+  bvh.build(std::move(face_indices), boxConverter);
 
   auto time = stopwatch.read();
 
   std::printf("Completing BVH in %.02f ms\n", time * 1000.0);
 
+  stopwatch.reset();
+
+  FaceIntersector intersector(reader.GetAttrib(), faces);
+
+  FastBVH::Traverser<float, uint32_t, decltype(intersector)> traverser(bvh, intersector);
+
+  auto traceKernel = [traverser](const FastBVH::Ray<float>& ray) {
+    auto isect = traverser.traverse(ray, false);
+    if (isect) {
+      return FastBVH::Vector3<float> { isect.uv[0], isect.uv[1], 1 };
+    } else {
+      return FastBVH::Vector3<float> { 0, 0, 0 };
+    }
+  };
+
+  FastBVH::SimpleScheduler<float> scheduler(800, 800);
+
+  scheduler.moveCamera(findGoodCameraPosition(bvh));
+
+  scheduler.schedule(traceKernel);
+
+  time = stopwatch.read();
+
+  std::printf("Model rendered in %.02f ms\n", time * 1000.0);
+
+  scheduler.saveResults("render2.ppm");
+
   return EXIT_SUCCESS;
-#if 0
-  BVH<float, Sphere<float>> bvh;
-
-  SphereBoxConverter<float> boxConverter;
-
-  Stopwatch sw;
-
-  // Compute a BVH for this object set
-  bvh.build(std::move(objects), boxConverter);
-
-  // Output tree build time and statistics
-  double constructionTime = sw.read();
-
-  LOG_STAT("Built BVH (%u nodes, with %u leafs) in %.02f ms",
-           (unsigned int) bvh.getNodeCount(),
-           (unsigned int) bvh.getLeafCount(),
-           1000.0 * constructionTime);
-
-  // Allocate space for some image pixels
-  const unsigned int width=800, height=800;
-  float* pixels = new float[width*height*3];
-
-  // Create a camera from position and focus point
-  Vector3<float> camera_position { 1.6, 1.3, 1.6 };
-  Vector3<float> camera_focus { 0,0,0 };
-  Vector3<float> camera_up { 0,1,0 };
-
-  // Camera tangent space
-  Vector3<float> camera_dir = normalize(camera_focus - camera_position);
-  Vector3<float> camera_u = normalize(camera_dir ^ camera_up);
-  Vector3<float> camera_v = normalize(camera_u ^ camera_dir);
-
-  SphereIntersector<float> intersector;
-
-  Traverser<float, Sphere<float>, decltype(intersector)> traverser(bvh, intersector);
-
-  printf("Rendering image (%dx%d)...\n", width, height);
-  // Raytrace over every pixel
-  for(size_t i=0; i<width; ++i) {
-    for(size_t j=0; j<height; ++j) {
-      size_t index = 3*(width * j + i);
-
-      float u = (i+.5f) / (float)(width-1) - .5f;
-      float v = (height-1-j+.5f) / (float)(height-1) - .5f;
-      float fov = .5f / tanf( 70.f * 3.14159265*.5f / 180.f);
-
-      // This is only valid for square aspect ratio images
-      Ray<float> ray(camera_position, normalize(camera_u*u + camera_v*v + camera_dir*fov));
-
-      auto I = traverser.traverse(ray, false);
-
-      if(!I) {
-        pixels[index] = pixels[index+1] = pixels[index+2] = 0.f;
-      } else {
-
-        // Just for fun, we'll make the color based on the normal
-
-        const Vector3<float> color {
-          std::fabs(I.normal.x),
-          std::fabs(I.normal.y),
-          std::fabs(I.normal.z)
-        };
-
-        pixels[index  ] = color.x;
-        pixels[index+1] = color.y;
-        pixels[index+2] = color.z;
-      }
-    }
-  }
-
-  // Output image file (PPM Format)
-  printf("Writing out image file: \"render.ppm\"\n");
-  FILE *image = fopen("render.ppm", "w");
-  fprintf(image, "P6\n%d %d\n255\n", width, height);
-  for(size_t j=0; j<height; ++j) {
-    for(size_t i=0; i<width; ++i) {
-      size_t index = 3*(width * j + i);
-      unsigned char r = std::max(std::min(pixels[index  ]*255.f, 255.f), 0.f);
-      unsigned char g = std::max(std::min(pixels[index+1]*255.f, 255.f), 0.f);
-      unsigned char b = std::max(std::min(pixels[index+2]*255.f, 255.f), 0.f);
-      fprintf(image, "%c%c%c", r,g,b);
-    }
-  }
-  fclose(image);
-
-  // Cleanup
-  delete[] pixels;
-#endif
 }
