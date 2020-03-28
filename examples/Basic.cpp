@@ -25,7 +25,7 @@ Vector3<float> randVector3() {
   return Vector3<float> { rand01(), rand01(), rand01() } * 2.0f - Vector3<float> { 1, 1, 1 };
 }
 
-//! Used for calculating the bounding boxes
+//! \brief Used for calculating the bounding boxes
 //! associated with spheres.
 //! \tparam Float The floating point type of the sphere and bounding box vectors.
 template <typename Float>
@@ -42,6 +42,41 @@ public:
 
     return BBox<Float>(sphere.center - box_delta,
                        sphere.center + box_delta);
+  }
+};
+
+//! \brief Used for calculating the intersections between rays and spheres.
+//! \tparam Float The floating point type of the spheres and rays.
+template <typename Float>
+class SphereIntersector final {
+public:
+  //! Indicates if a ray and a sphere intersect.
+  //! \param sphere The sphere to check intersection for.
+  //! \param ray The ray being traced.
+  //! \return An instance of @ref FastBVH::Intersection that contains the intersection
+  //! data and indicates whether or not there was actually an intersection.
+  Intersection<Float, Sphere<Float>> operator () (const Sphere<Float>& sphere, const Ray<Float>& ray) const noexcept {
+
+    const auto& center = sphere.center;
+    const auto& r2 = sphere.r2;
+
+    auto s = center - ray.o;
+    auto sd = s * ray.d;
+    auto ss = s * s;
+
+    // Compute discriminant
+    auto disc = sd*sd - ss + r2;
+
+    // Complex values: No intersection
+    if (disc < 0.f) {
+      return Intersection<Float, Sphere<Float>>{};
+    }
+
+    // Assume we are not in a sphere... The first hit is the lesser valued
+    return Intersection<Float, Sphere<Float>> {
+      sd - std::sqrt(disc),
+      &sphere
+    };
   }
 };
 
@@ -90,7 +125,9 @@ int main() {
   Vector3<float> camera_u = normalize(camera_dir ^ camera_up);
   Vector3<float> camera_v = normalize(camera_u ^ camera_dir);
 
-  Traverser<float, Sphere<float>> traverser(bvh);
+  SphereIntersector<float> intersector;
+
+  Traverser<float, Sphere<float>, decltype(intersector)> traverser(bvh, intersector);
 
   printf("Rendering image (%dx%d)...\n", width, height);
   // Raytrace over every pixel

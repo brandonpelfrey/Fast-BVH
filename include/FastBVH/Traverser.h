@@ -8,15 +8,18 @@ namespace FastBVH {
 //! and checking for ray-primitive intersections.
 //! \tparam Float The floating point type used by vector components.
 //! \tparam Primitive The type of the primitive that the BVH was made with.
-template <typename Float, typename Primitive>
+//! \tparam Intersector The type of the primitive intersector.
+template <typename Float, typename Primitive, typename Intersector>
 class Traverser final {
   //! The BVH to be traversed.
   const BVH<Float, Primitive>& bvh;
+  /// The ray-primitive intersector.
+  Intersector intersector;
 public:
   //! Constructs a new BVH traverser.
   //! \param bvh_ The BVH to be traversed.
-  constexpr Traverser(const BVH<Float, Primitive>& bvh_) noexcept
-    : bvh(bvh_) {}
+  constexpr Traverser(const BVH<Float, Primitive>& bvh_, const Intersector& intersector_) noexcept
+    : bvh(bvh_), intersector(intersector_) {}
   //! Traces a single ray throughout the BVH, getting the closest intersection.
   //! \param ray The ray to be traced.
   //! \return An intersection instance.
@@ -45,8 +48,8 @@ struct Traversal final {
 
 } // namespace impl
 
-template <typename Float, typename Primitive>
-Intersection<Float, Primitive> Traverser<Float, Primitive>::traverse(const Ray<Float>& ray, bool occlusion) const {
+template <typename Float, typename Primitive, typename Intersector>
+Intersection<Float, Primitive> Traverser<Float, Primitive, Intersector>::traverse(const Ray<Float>& ray, bool occlusion) const {
 
   using Traversal = TraverserImpl::Traversal<Float>;
 
@@ -85,14 +88,12 @@ Intersection<Float, Primitive> Traverser<Float, Primitive>::traverse(const Ray<F
 
         const auto& obj = build_prims[node.start + o];
 
-        auto current = getPrimitiveIntersection(obj, ray);
-
+        auto current = intersector(obj, ray);
         if (current) {
           // If we're only looking for occlusion, then any hit is good enough
           if(occlusion) {
             return current;
           }
-
           intersection = closest(intersection, current);
         }
       }
