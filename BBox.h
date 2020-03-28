@@ -7,7 +7,11 @@
 namespace FastBVH {
 
 struct BBox final {
-  Vector3 min, max, extent;
+
+  Vector3 min;
+  Vector3 max;
+  Vector3 extent;
+
   BBox() { }
   BBox(const Vector3& min, const Vector3& max);
   BBox(const Vector3& p);

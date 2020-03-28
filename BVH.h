@@ -12,13 +12,17 @@ namespace FastBVH {
 //! Node descriptor for the flattened tree
 struct BVHFlatNode final {
   BBox bbox;
-  uint32_t start, nPrims, rightOffset;
+  uint32_t start;
+  uint32_t nPrims;
+  uint32_t rightOffset;
 };
 
 //! \author Brandon Pelfrey
 //! A Bounding Volume Hierarchy system for fast Ray-Object intersection tests
 class BVH final {
-  uint32_t nNodes, nLeafs, leafSize;
+  uint32_t nNodes;
+  uint32_t nLeafs;
+  uint32_t leafSize;
   std::vector<Object*>* build_prims;
 
   //! Build the BVH tree out of build_prims
