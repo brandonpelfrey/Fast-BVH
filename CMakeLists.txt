@@ -2,29 +2,26 @@ cmake_minimum_required(VERSION 3.1.3)
 
 project(Fast_BVH LANGUAGES CXX)
 
-option(ENABLE_SSE3 "Enable the use of explicit SSE3 code" ON)
-
 set(CMAKE_CXX_STANDARD 14)
 
-if(ENABLE_SSE3)
-  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-msse3")
-endif(ENABLE_SSE3)
+set(gnu_cxxflags -Wall -Wextra -Werror -Wfatal-errors)
 
-add_library(Fast_BVH
-  BVH.h
-  BVH.cpp
-  BBox.h
-  BBox.cpp
-  Vector3.h
-  Stopwatch.h
-  Log.h)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  list(APPEND gnu_cxxflags -ffast-math)
+endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 
-target_include_directories(Fast_BVH PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+if((CMAKE_CXX_COMPILER_ID STREQUAL GNU) OR (CMAKE_CXX_COMPILER_ID MATCHES Clang))
+  set(cxxflags ${gnu_cxxflags})
+endif((CMAKE_CXX_COMPILER_ID STREQUAL GNU) OR (CMAKE_CXX_COMPILER_ID MATCHES Clang))
 
-target_compile_options(Fast_BVH PRIVATE -Wall -Wextra -Werror -Wfatal-errors)
+add_library(Fast_BVH INTERFACE)
+
+target_include_directories(Fast_BVH INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_executable(Fast_BVH_RayTracerTest RayTracerTest.cpp)
 
 target_link_libraries(Fast_BVH_RayTracerTest PRIVATE Fast_BVH)
+
+target_compile_options(Fast_BVH_RayTracerTest PRIVATE ${cxxflags})
 
 set_target_properties(Fast_BVH_RayTracerTest PROPERTIES OUTPUT_NAME RayTracerTest)
