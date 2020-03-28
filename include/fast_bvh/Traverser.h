@@ -7,20 +7,20 @@ namespace FastBVH {
 //! Used for traversing a BVH
 //! and checking for ray-object
 //! intersections.
-template <typename Float>
+template <typename Float, typename Primitive>
 class Traverser final {
   //! The BVH to be traversed.
-  const BVH<Float>& bvh;
+  const BVH<Float, Primitive>& bvh;
 public:
   //! Constructs a new BVH traverser.
   //! \param bvh_ The BVH to be traversed.
-  constexpr Traverser(const BVH<Float>& bvh_) noexcept
+  constexpr Traverser(const BVH<Float, Primitive>& bvh_) noexcept
     : bvh(bvh_) {}
   //! Traces a single ray throughout the BVH, getting the closest intersection.
   //! \param ray The ray to be traced.
   //! \param intersection Receives the intersection info of the closest hit.
   //! \return True if the ray intersected a primitive, false otherwise.
-  bool getIntersection(const Ray<Float>& ray, IntersectionInfo<Float> *intersection, bool occlusion) const;
+  bool getIntersection(const Ray<Float>& ray, IntersectionInfo<Float, Primitive> *intersection, bool occlusion) const;
 };
 
 //! Node for storing state information during traversal.
@@ -32,8 +32,8 @@ struct BVHTraversal final {
   BVHTraversal(int _i, Float _mint) : i(_i), mint(_mint) { }
 };
 
-template <typename Float>
-bool Traverser<Float>::getIntersection(const Ray<Float>& ray, IntersectionInfo<Float>* intersection, bool occlusion) const {
+template <typename Float, typename Primitive>
+bool Traverser<Float, Primitive>::getIntersection(const Ray<Float>& ray, IntersectionInfo<Float, Primitive>* intersection, bool occlusion) const {
 
   intersection->t = 999999999.f;
   intersection->object = nullptr;
@@ -68,10 +68,12 @@ bool Traverser<Float>::getIntersection(const Ray<Float>& ray, IntersectionInfo<F
     if( node.rightOffset == 0 ) {
 
       for(uint32_t o=0;o<node.nPrims;++o) {
-        IntersectionInfo<Float> current;
 
-        const auto* obj = build_prims[node.start+o];
-        bool hit = obj->getIntersection(ray, &current);
+        IntersectionInfo<Float, Primitive> current;
+
+        const auto& obj = build_prims[node.start + o];
+
+        bool hit = getPrimitiveIntersection(obj, ray, &current);
 
         if (hit) {
           // If we're only looking for occlusion, then any hit is good enough

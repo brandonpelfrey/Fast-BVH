@@ -25,14 +25,16 @@ int main() {
 
   // Create a million spheres packed in the space of a cube
   const unsigned int N = 1000000;
-  vector<Object<float>*> objects;
+
+  vector<Sphere<float>> objects;
+
   printf("Constructing %d spheres...\n", N);
   for(size_t i=0; i<N; ++i) {
-    objects.push_back(new Sphere<float>(randVector3(), .005f));
+    objects.emplace_back(Sphere<float>(randVector3(), .005f));
   }
 
   // Compute a BVH for this object set
-  BVH<float> bvh(std::move(objects));
+  BVH<float, Sphere<float>> bvh(std::move(objects));
 
   // Allocate space for some image pixels
   const unsigned int width=800, height=800;
@@ -48,7 +50,7 @@ int main() {
   Vector3<float> camera_u = normalize(camera_dir ^ camera_up);
   Vector3<float> camera_v = normalize(camera_u ^ camera_dir);
 
-  Traverser<float> traverser(bvh);
+  Traverser<float, Sphere<float>> traverser(bvh);
 
   printf("Rendering image (%dx%d)...\n", width, height);
   // Raytrace over every pixel
@@ -63,7 +65,7 @@ int main() {
       // This is only valid for square aspect ratio images
       Ray<float> ray(camera_position, normalize(camera_u*u + camera_v*v + camera_dir*fov));
 
-      IntersectionInfo<float> I;
+      IntersectionInfo<float, Sphere<float>> I;
 
       bool hit = traverser.getIntersection(ray, &I, false);
 
@@ -72,7 +74,7 @@ int main() {
       } else {
 
         // Just for fun, we'll make the color based on the normal
-        const Vector3<float> normal = I.object->getNormal(I);
+        const Vector3<float> normal = getNormal(*I.object, I);
 
         const Vector3<float> color {
           std::fabs(normal.x),

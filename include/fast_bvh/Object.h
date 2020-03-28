@@ -8,7 +8,7 @@ namespace FastBVH {
 
 template <typename Float>
 struct Object {
-
+#if 0
   //! All "Objects" must be able to test for intersections with rays.
   virtual bool getIntersection(const Ray<Float>& ray, IntersectionInfo<Float>* intersection) const noexcept {
     (void)ray;
@@ -31,6 +31,7 @@ struct Object {
   virtual Vector3<Float> getCentroid() const noexcept {
     return Vector3<Float> { 0, 0, 0 };
   }
+#endif
 };
 
 } // namespace FastBVH
