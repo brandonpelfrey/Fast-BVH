@@ -1,3 +1,5 @@
+DOXYGEN := doxygen
+
 CXXFLAGS := -Wall -Wextra -Werror -Wfatal-errors
 CXXFLAGS := $(CXXFLAGS) -I $(CURDIR)/include
 CXXFLAGS := $(CXXFLAGS) -std=c++14
@@ -28,3 +30,7 @@ clean:
 .PHONY: test
 test: RayTracerTest
 	./RayTracerTest
+
+.PHONY: docs
+docs:
+	$(DOXYGEN)
