@@ -24,7 +24,9 @@ public:
   Intersection<Float, Primitive> traverse(const Ray<Float>& ray, bool occlusion) const;
 };
 
-namespace impl {
+//! \brief Contains implementation details
+//! for the @ref Traverser class.
+namespace TraverserImpl {
 
 //! \brief Node for storing state information during traversal.
 template <typename Float>
@@ -46,7 +48,7 @@ struct Traversal final {
 template <typename Float, typename Primitive>
 Intersection<Float, Primitive> Traverser<Float, Primitive>::traverse(const Ray<Float>& ray, bool occlusion) const {
 
-  using Traversal = impl::Traversal<Float>;
+  using Traversal = TraverserImpl::Traversal<Float>;
 
   Intersection<Float, Primitive> intersection;
 
