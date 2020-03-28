@@ -23,6 +23,33 @@ target_link_libraries(myAwesomeRayTracer PRIVATE FastBVH)
 Note that even though the command is called `target_link_libraries`, there's no linking or compilation taking place.
 In CMake, `FastBVH` is an "interface" library. This means that it's only meant to relay things like include directories, compiler flags, etc.
 
+### Preparing the Scene Data
+
+Most ray tracers use primitive shapes to build a scene.
+For this example, we'll be using a sphere as a primitive shape.
+Just note that we could also be using a triangle, a voxel, or polygonal surface.
+
+```cxx
+#include <vector>
+
+struct Sphere final {
+  float x;
+  float y;
+  float z;
+  float radius;
+};
+
+int main() {
+
+  std::vector<Sphere> spheres;
+  spheres.emplace_back({ 0, 0, 0, 0.1 });
+  spheres.emplace_back({ 2, 0, 0, 1.0 });
+  spheres.emplace_back({ 1, 3, 2, 0.5 });
+
+  return 0;
+}
+```
+
 ### Building a BVH
 
 Now that you've got the project in a usable format, you can start building your first BVH.
@@ -30,10 +57,12 @@ Now that you've got the project in a usable format, you can start building your 
 Start by including the directory for the @ref FastBVH::BVH data structure.
 
 ```cxx
-#include <fast_bvh/BVH.h>
+#include <FastBVH/BVH.h>
 
 int main() {
 
   return 0;
 }
 ```
+
+
