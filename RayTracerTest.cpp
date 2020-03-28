@@ -15,7 +15,7 @@ float rand01() {
 
 // Return a random vector with each component in the range [-1,1]
 Vector3 randVector3() {
-  return Vector3(rand01(), rand01(), rand01())*2.f - Vector3(1,1,1);
+  return Vector3 { rand01(), rand01(), rand01() } * 2.0f - Vector3 { 1, 1, 1 };
 }
 
 int main() {
@@ -36,9 +36,9 @@ int main() {
   float* pixels = new float[width*height*3];
 
   // Create a camera from position and focus point
-  Vector3 camera_position(1.6, 1.3, 1.6);
-  Vector3 camera_focus(0,0,0);
-  Vector3 camera_up(0,1,0);
+  Vector3 camera_position { 1.6, 1.3, 1.6 };
+  Vector3 camera_focus { 0,0,0 };
+  Vector3 camera_up { 0,1,0 };
 
   // Camera tangent space
   Vector3 camera_dir = normalize(camera_focus - camera_position);
@@ -56,7 +56,7 @@ int main() {
       float fov = .5f / tanf( 70.f * 3.14159265*.5f / 180.f);
 
       // This is only valid for square aspect ratio images
-      Ray ray(camera_position, normalize(u*camera_u + v*camera_v + fov*camera_dir));
+      Ray ray(camera_position, normalize(camera_u*u + camera_v*v + camera_dir*fov));
 
       IntersectionInfo I;
       bool hit = bvh.getIntersection(ray, &I, false);
@@ -67,7 +67,12 @@ int main() {
 
         // Just for fun, we'll make the color based on the normal
         const Vector3 normal = I.object->getNormal(I);
-        const Vector3 color(fabs(normal.x), fabs(normal.y), fabs(normal.z));
+
+        const Vector3 color {
+          std::fabs(normal.x),
+          std::fabs(normal.y),
+          std::fabs(normal.z)
+        };
 
         pixels[index  ] = color.x;
         pixels[index+1] = color.y;

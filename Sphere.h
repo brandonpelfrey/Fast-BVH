@@ -35,7 +35,7 @@ struct Sphere final : public Object {
   }
 
   BBox getBBox() const {
-    return BBox(center-Vector3(r,r,r), center+Vector3(r,r,r));
+    return BBox(center-Vector3 { r, r, r }, center + Vector3 { r, r, r });
   }
 
   Vector3 getCentroid() const {
