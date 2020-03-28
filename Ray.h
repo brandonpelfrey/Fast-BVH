@@ -1,5 +1,4 @@
-#ifndef Ray_h
-#define Ray_h
+#pragma once
 
 #include "Vector3.h"
 
@@ -11,5 +10,3 @@ struct Ray final {
   Ray(const Vector3& o, const Vector3& d)
     : o(o), d(d), inv_d(Vector3(1,1,1).cdiv(d)) { }
 };
-
-#endif

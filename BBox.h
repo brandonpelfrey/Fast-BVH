@@ -1,5 +1,4 @@
-#ifndef BBox_h
-#define BBox_h
+#pragma once
 
 #include "Ray.h"
 #include "Vector3.h"
@@ -17,5 +16,3 @@ struct BBox final {
   uint32_t maxDimension() const;
   float surfaceArea() const;
 };
-
-#endif

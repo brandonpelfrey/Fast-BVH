@@ -1,5 +1,4 @@
-#ifndef Log_h
-#define Log_h
+#pragma once
 
 #include <cstdio>
 
@@ -27,7 +26,4 @@
  #define LOG_ERROR(...) { printf( "[Error] " __VA_ARGS__); printf("\n"); }
 #else
  #define LOG_ERROR(...) ;
-#endif
-
-
 #endif

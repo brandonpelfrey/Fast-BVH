@@ -1,5 +1,4 @@
-#ifndef Vector3_h
-#define Vector3_h
+#pragma once
 
 #include <string>
 #include <cmath>
@@ -87,5 +86,3 @@ inline Vector3 normalize(const Vector3& in) {
 
   return _mm_mul_ps( a.m128, r );
 }
-
-#endif

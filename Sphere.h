@@ -1,5 +1,4 @@
-#ifndef Sphere_h_
-#define Sphere_h_
+#pragma once
 
 #include <cmath>
 #include "Object.h"
@@ -42,5 +41,3 @@ struct Sphere final : public Object {
   }
 
 };
-
-#endif

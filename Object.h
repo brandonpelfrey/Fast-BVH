@@ -1,5 +1,4 @@
-#ifndef Object_h_
-#define Object_h_
+#pragma once
 
 #include "IntersectionInfo.h"
 #include "Ray.h"
@@ -21,5 +20,3 @@ struct Object {
   //! Return the centroid for this object. (Used in BVH Sorting)
   virtual Vector3 getCentroid() const = 0;
 };
-
-#endif

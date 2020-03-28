@@ -1,5 +1,4 @@
-#ifndef Stopwatch_h
-#define Stopwatch_h
+#pragma once
 
 #include <sys/time.h>
 
@@ -17,5 +16,3 @@ class Stopwatch final {
     void reset() { start = _stopwatch(); }
     double read() const { return _stopwatch() - start; }
 };
-
-#endif

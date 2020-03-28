@@ -1,5 +1,4 @@
-#ifndef BVH_h
-#define BVH_h
+#pragma once
 
 #include "BBox.h"
 #include <vector>
@@ -32,5 +31,3 @@ class BVH final {
 
   ~BVH();
 };
-
-#endif
