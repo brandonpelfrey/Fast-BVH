@@ -82,22 +82,6 @@ struct Vector3 final {
     };
   }
 
-  //! Computes the dot product between two vectors.
-  Float operator*(const Vector3& b) const noexcept {
-    return (x * b.x)
-         + (y * b.y)
-         + (z * b.z);
-  }
-
-  //! Computes the cross product of two vectors.
-  Vector3 operator^(const Vector3& b) const noexcept {
-    return Vector3 {
-      (y * b.z) - (z * b.y),
-      (z * b.x) - (x * b.z),
-      (x * b.y) - (y * b.x),
-    };
-  }
-
   /// Component-wise vector division.
   Vector3 operator / (const Vector3& b) const noexcept {
     return Vector3 {
@@ -118,6 +102,26 @@ struct Vector3 final {
     return (&x)[i];
   }
 };
+
+//! Computes the cross product of two vectors.
+template <typename Float>
+Vector3<Float> cross(const Vector3<Float>& a,
+                     const Vector3<Float>& b) noexcept {
+  return Vector3<Float> {
+    (a.y * b.z) - (a.z * b.y),
+    (a.z * b.x) - (a.x * b.z),
+    (a.x * b.y) - (a.y * b.x),
+  };
+}
+
+//! Computes the dot product between two vectors.
+template <typename Float>
+Float dot(const Vector3<Float>& a,
+          const Vector3<Float>& b) noexcept {
+  return (a.x * b.x)
+       + (a.y * b.y)
+       + (a.z * b.z);
+}
 
 //! Calculates all minimum values between two vectors.
 //! \tparam Float The floating point type of the vector.
@@ -153,7 +157,7 @@ inline Vector3<Float> max(const Vector3<Float>& a,
 //! \return The length of @p a.
 template <typename Float>
 inline Float length(const Vector3<Float>& a) noexcept {
-  return std::sqrt(a * a);
+  return std::sqrt(dot(a, a));
 }
 
 //! Divides a vector by it's length, making its magnitude equal to one.

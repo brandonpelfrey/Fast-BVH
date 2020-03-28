@@ -70,8 +70,8 @@ public:
     const auto& r2 = sphere.r2;
 
     auto s = center - ray.o;
-    auto sd = s * ray.d;
-    auto ss = s * s;
+    auto sd = dot(s, ray.d);
+    auto ss = dot(s, s);
 
     // Compute discriminant
     auto disc = sd*sd - ss + r2;
@@ -136,8 +136,8 @@ int main() {
 
   // Camera tangent space
   Vector3<float> camera_dir = normalize(camera_focus - camera_position);
-  Vector3<float> camera_u = normalize(camera_dir ^ camera_up);
-  Vector3<float> camera_v = normalize(camera_u ^ camera_dir);
+  Vector3<float> camera_u = normalize(cross(camera_dir, camera_up));
+  Vector3<float> camera_v = normalize(cross(camera_u, camera_dir));
 
   SphereIntersector<float> intersector;
 
