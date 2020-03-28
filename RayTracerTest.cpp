@@ -15,7 +15,7 @@ Vector3 randVector3() {
   return Vector3(rand01(), rand01(), rand01())*2.f - Vector3(1,1,1);
 }
 
-int main(int argc, char **argv) {
+int main() {
 
   // Create a million spheres packed in the space of a cube
   const unsigned int N = 1000000;
@@ -44,7 +44,6 @@ int main(int argc, char **argv) {
 
   printf("Rendering image (%dx%d)...\n", width, height);
   // Raytrace over every pixel
-#pragma omp parallel for
   for(size_t i=0; i<width; ++i) {
     for(size_t j=0; j<height; ++j) {
       size_t index = 3*(width * j + i);
