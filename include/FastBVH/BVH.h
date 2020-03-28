@@ -49,14 +49,16 @@ public:
   //! and then remade based on the new data.
   //! \param objects The primitives to build the BVH from.
   //! \param leafSize The number of primitives per leaf.
-  void build(std::vector<Primitive>&& objects, uint32_t leafSize = 4) {
+  //! \param converter The primitive-to-box converter instance.
+  template <typename BoxConverter>
+  void build(std::vector<Primitive>&& objects, const BoxConverter& converter, uint32_t leafSize = 4) {
 
     this->nLeafs = 0;
     this->leafSize = leafSize;
     this->build_prims = std::move(objects);
     this->flatTree.clear();
 
-    this->build();
+    this->build(converter);
   }
   //! Gets the number of leafs in the BVH.
   //! \return The number of leafs in the BVH.
@@ -80,7 +82,9 @@ public:
   }
 protected:
   //! Build the BVH tree out of build_prims
-  void build();
+  //! \param converter The primitive to bounding box converter.
+  template <typename BoxConverter>
+  void build(const BoxConverter& converter);
 };
 
 //! \brief Contains the context used while building
@@ -104,7 +108,8 @@ struct BuildEntry final {
 //! \tparam Float The floating point type used in the BVH vectors.
 //! \tparam Primtive The type of the primtive in the BVH.
 template <typename Float, typename Primitive>
-void BVH<Float, Primitive>::build() {
+template <typename BoxConverter>
+void BVH<Float, Primitive>::build(const BoxConverter& converter) {
 
   BuildEntry todo[128];
   uint32_t stackptr = 0;
@@ -135,13 +140,15 @@ void BVH<Float, Primitive>::build() {
     node.rightOffset = Untouched;
 
     // Calculate the bounding box for this node
-    BBox<Float> bb(getBBox(build_prims[start]));
-    BBox<Float> bc(bb.getCenter());
+    auto bb = converter(build_prims[start]);
+    auto bc = BBox<Float>(bb.getCenter());
+
     for(uint32_t p = start+1; p < end; ++p) {
-      auto box = getBBox(build_prims[p]);
+      auto box = converter(build_prims[p]);
       bb.expandToInclude(box);
       bc.expandToInclude(box.getCenter());
     }
+
     node.bbox = bb;
 
     // If the number of primitives at this point is less than the leaf
@@ -178,7 +185,7 @@ void BVH<Float, Primitive>::build() {
     // Partition the list of objects on this split
     uint32_t mid = start;
     for(uint32_t i=start;i<end;++i) {
-      auto box = getBBox(build_prims[i]);
+      auto box = converter(build_prims[i]);
       if(box.getCenter()[split_dim] < split_coord ) {
         std::swap( build_prims[i], build_prims[mid] );
         ++mid;

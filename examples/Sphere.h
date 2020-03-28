@@ -45,16 +45,4 @@ Vector3<Float> getNormal(const Sphere<Float>& sphere, const IntersectionInfo<Flo
   return normalize(I.hit - sphere.center);
 }
 
-template <typename Float>
-BBox<Float> getBBox(const Sphere<Float>& sphere) noexcept {
-  const auto& r = sphere.r;
-  return BBox<Float>(sphere.center - Vector3<Float> { r, r, r },
-                     sphere.center + Vector3<Float> { r, r, r });
-}
-
-template <typename Float>
-Vector3<Float> getCentroid(const Sphere<Float>& sphere) noexcept {
-  return sphere.center;
-}
-
 } // namespace FastBVH

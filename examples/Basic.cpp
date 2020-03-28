@@ -9,6 +9,8 @@
 #include "Sphere.h"
 #include "Stopwatch.h"
 
+namespace {
+
 using std::vector;
 
 using namespace FastBVH;
@@ -22,6 +24,28 @@ float rand01() {
 Vector3<float> randVector3() {
   return Vector3<float> { rand01(), rand01(), rand01() } * 2.0f - Vector3<float> { 1, 1, 1 };
 }
+
+//! Used for calculating the bounding boxes
+//! associated with spheres.
+//! \tparam Float The floating point type of the sphere and bounding box vectors.
+template <typename Float>
+class SphereBoxConverter final {
+public:
+  //! Converts a sphere to a bounding box.
+  //! \param sphere The sphere to convert to a bounding box.
+  //! \return A bounding box that encapsulates the sphere.
+  BBox<Float> operator () (const Sphere<Float>& sphere) const noexcept {
+
+    const auto& r = sphere.r;
+
+    auto box_delta = Vector3<Float> { r, r, r };
+
+    return BBox<Float>(sphere.center - box_delta,
+                       sphere.center + box_delta);
+  }
+};
+
+} // namespace
 
 int main() {
 
@@ -37,10 +61,12 @@ int main() {
 
   BVH<float, Sphere<float>> bvh;
 
+  SphereBoxConverter<float> boxConverter;
+
   Stopwatch sw;
 
   // Compute a BVH for this object set
-  bvh.build(std::move(objects));
+  bvh.build(std::move(objects), boxConverter);
 
   // Output tree build time and statistics
   double constructionTime = sw.read();
