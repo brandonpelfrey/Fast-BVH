@@ -1,3 +1,6 @@
 build
 render.ppm
 RayTracerTest
+*.o
+*.obj
+*.exe
