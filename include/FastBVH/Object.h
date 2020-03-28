@@ -1,8 +1,8 @@
 #pragma once
 
-#include <fast_bvh/BBox.h>
-#include <fast_bvh/IntersectionInfo.h>
-#include <fast_bvh/Ray.h>
+#include <FastBVH/BBox.h>
+#include <FastBVH/IntersectionInfo.h>
+#include <FastBVH/Ray.h>
 
 namespace FastBVH {
 

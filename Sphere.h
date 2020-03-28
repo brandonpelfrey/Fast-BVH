@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fast_bvh/IntersectionInfo.h>
+#include <FastBVH/IntersectionInfo.h>
 
 #include <cmath>
 

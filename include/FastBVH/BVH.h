@@ -1,11 +1,11 @@
 #pragma once
 
-#include <fast_bvh/BBox.h>
-#include <fast_bvh/Object.h>
-#include <fast_bvh/IntersectionInfo.h>
-#include <fast_bvh/Log.h>
-#include <fast_bvh/Ray.h>
-#include <fast_bvh/Stopwatch.h>
+#include <FastBVH/BBox.h>
+#include <FastBVH/Object.h>
+#include <FastBVH/IntersectionInfo.h>
+#include <FastBVH/Log.h>
+#include <FastBVH/Ray.h>
+#include <FastBVH/Stopwatch.h>
 
 #include <vector>
 

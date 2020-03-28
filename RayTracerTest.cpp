@@ -2,8 +2,8 @@
 #include <vector>
 #include <cstdlib>
 
-#include <fast_bvh/BVH.h>
-#include <fast_bvh/Traverser.h>
+#include <FastBVH/BVH.h>
+#include <FastBVH/Traverser.h>
 
 #include "Sphere.h"
 

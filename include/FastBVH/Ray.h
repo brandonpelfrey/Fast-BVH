@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fast_bvh/Vector3.h>
+#include <FastBVH/Vector3.h>
 
 namespace FastBVH {
 

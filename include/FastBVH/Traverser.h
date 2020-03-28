@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fast_bvh/BVH.h>
+#include <FastBVH/BVH.h>
 
 namespace FastBVH {
 
