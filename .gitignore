@@ -4,3 +4,4 @@ RayTracerTest
 *.o
 *.obj
 *.exe
+doxygen
