@@ -32,4 +32,10 @@ function(add_example name)
 
 endfunction(add_example name)
 
-add_example(CubeOfSpheres examples/CubeOfSpheres.cpp)
+add_example(CubeOfSpheres
+  examples/CubeOfSpheres.cpp)
+
+add_example(ObjFile
+  examples/ObjFile.cpp
+  examples/tiny_obj_loader.h
+  examples/tiny_obj_loader.cc)
