@@ -72,10 +72,15 @@ public:
       return Intersection<Float, Sphere<Float>>{};
     }
 
+    auto t = sd - std::sqrt(disc);
+
+    auto hit_pos = ray.o + (ray.d * t);
+
+    auto normal = normalize(hit_pos - sphere.center);
+
     // Assume we are not in a sphere... The first hit is the lesser valued
     return Intersection<Float, Sphere<Float>> {
-      sd - std::sqrt(disc),
-      &sphere
+      t, &sphere, normal
     };
   }
 };
@@ -149,12 +154,11 @@ int main() {
       } else {
 
         // Just for fun, we'll make the color based on the normal
-        const Vector3<float> normal = getNormal(*I.object, I);
 
         const Vector3<float> color {
-          std::fabs(normal.x),
-          std::fabs(normal.y),
-          std::fabs(normal.z)
+          std::fabs(I.normal.x),
+          std::fabs(I.normal.y),
+          std::fabs(I.normal.z)
         };
 
         pixels[index  ] = color.x;

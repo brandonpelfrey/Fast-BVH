@@ -16,9 +16,4 @@ struct Sphere final {
     : center(center), r(radius), r2(radius*radius) { }
 };
 
-template <typename Float>
-Vector3<Float> getNormal(const Sphere<Float>& sphere, const Intersection<Float, Sphere<Float>>& I) noexcept {
-  return normalize(I.hit - sphere.center);
-}
-
 } // namespace FastBVH

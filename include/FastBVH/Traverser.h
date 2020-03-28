@@ -138,11 +138,6 @@ Intersection<Float, Primitive> Traverser<Float, Primitive, Intersector>::travers
     }
   }
 
-  // If we hit something,
-  if (intersection) {
-    intersection.hit = ray.o + ray.d * intersection.t;
-  }
-
   return intersection;
 }
 

@@ -11,12 +11,21 @@ namespace FastBVH {
 //! \tparam Primitive The type of primitive used to construct the BVH.
 template <typename Float, typename Primitive>
 struct Intersection final {
+  /// A simple type definition for 3D vector.
+  using Vec3 = Vector3<Float>;
   //! The scale at which the ray reaches the primitive.
   Float t = std::numeric_limits<Float>::infinity();
   //! A pointer to the primitive that the ray intersected with.
   const Primitive* object = nullptr;
-  //! The point at which the ray intersects the primitive.
-  Vector3<Float> hit = { 0, 0, 0 };
+  //! The normal at the point of intersection.
+  Vec3 normal = { 0, 0, 1 };
+  //! Gets the position at the ray hit the object.
+  //! \param ray_pos The ray position.
+  //! \param ray_dir The ray direction.
+  //! \return The position at which the intersection occurred at.
+  Vec3 getHitPosition(const Vec3& ray_pos, const Vec3& ray_dir) const noexcept {
+    return ray_pos + (ray_dir * t);
+  }
   //! Indicates whether or not the intersection is valid.
   //! \return True if the intersection is valid, false otherwise.
   operator bool () const noexcept {
