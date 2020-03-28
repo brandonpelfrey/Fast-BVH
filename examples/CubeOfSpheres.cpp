@@ -6,7 +6,6 @@
 #include <FastBVH/Traverser.h>
 
 #include "Log.h"
-#include "Sphere.h"
 #include "Stopwatch.h"
 
 namespace {
@@ -24,6 +23,16 @@ float rand01() {
 Vector3<float> randVector3() {
   return Vector3<float> { rand01(), rand01(), rand01() } * 2.0f - Vector3<float> { 1, 1, 1 };
 }
+
+//! For the purposes of demonstrating the BVH, a simple sphere
+template <typename Float>
+struct Sphere final {
+  Vector3<Float> center; // Center of the sphere
+  Float r, r2; // Radius, Radius^2
+
+  constexpr Sphere(const Vector3<Float>& center, Float radius) noexcept
+    : center(center), r(radius), r2(radius*radius) { }
+};
 
 //! \brief Used for calculating the bounding boxes
 //! associated with spheres.

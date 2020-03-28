@@ -32,4 +32,4 @@ function(add_example name)
 
 endfunction(add_example name)
 
-add_example(Basic examples/Basic.cpp)
+add_example(CubeOfSpheres examples/CubeOfSpheres.cpp)
