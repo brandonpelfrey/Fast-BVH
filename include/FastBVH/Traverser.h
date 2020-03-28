@@ -19,9 +19,9 @@ public:
     : bvh(bvh_) {}
   //! Traces a single ray throughout the BVH, getting the closest intersection.
   //! \param ray The ray to be traced.
-  //! \param intersection Receives the intersection info of the closest hit.
-  //! \return True if the ray intersected a primitive, false otherwise.
-  bool getIntersection(const Ray<Float>& ray, IntersectionInfo<Float, Primitive> *intersection, bool occlusion) const;
+  //! \return An intersection instance.
+  //! It may or may not be valid, based on whether or not the ray made a collision.
+  Intersection<Float, Primitive> traverse(const Ray<Float>& ray, bool occlusion) const;
 };
 
 //! \brief Node for storing state information during traversal.
@@ -40,10 +40,9 @@ struct BVHTraversal final {
 };
 
 template <typename Float, typename Primitive>
-bool Traverser<Float, Primitive>::getIntersection(const Ray<Float>& ray, IntersectionInfo<Float, Primitive>* intersection, bool occlusion) const {
+Intersection<Float, Primitive> Traverser<Float, Primitive>::traverse(const Ray<Float>& ray, bool occlusion) const {
 
-  intersection->t = 999999999.f;
-  intersection->object = nullptr;
+  Intersection<Float, Primitive> intersection;
 
   Float bbhits[4];
   int32_t closer, other;
@@ -68,7 +67,7 @@ bool Traverser<Float, Primitive>::getIntersection(const Ray<Float>& ray, Interse
     const auto &node(flatTree[ ni ]);
 
     // If this node is further than the closest found intersection, continue
-    if(near > intersection->t)
+    if(near > intersection.t)
       continue;
 
     // Is leaf -> Intersect
@@ -76,22 +75,17 @@ bool Traverser<Float, Primitive>::getIntersection(const Ray<Float>& ray, Interse
 
       for(uint32_t o=0;o<node.nPrims;++o) {
 
-        IntersectionInfo<Float, Primitive> current;
-
         const auto& obj = build_prims[node.start + o];
 
-        bool hit = getPrimitiveIntersection(obj, ray, &current);
+        auto current = getPrimitiveIntersection(obj, ray);
 
-        if (hit) {
+        if (current) {
           // If we're only looking for occlusion, then any hit is good enough
           if(occlusion) {
-            return true;
+            return current;
           }
 
-          // Otherwise, keep the closest intersection only
-          if (current.t < intersection->t) {
-            *intersection = current;
-          }
+          intersection = closest(intersection, current);
         }
       }
 
@@ -136,10 +130,11 @@ bool Traverser<Float, Primitive>::getIntersection(const Ray<Float>& ray, Interse
   }
 
   // If we hit something,
-  if(intersection->object != NULL)
-    intersection->hit = ray.o + ray.d * intersection->t;
+  if (intersection) {
+    intersection.hit = ray.o + ray.d * intersection.t;
+  }
 
-  return intersection->object != NULL;
+  return intersection;
 }
 
 } // namespace FastBVH

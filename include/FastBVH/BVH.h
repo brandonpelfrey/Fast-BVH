@@ -1,7 +1,7 @@
 #pragma once
 
 #include <FastBVH/BBox.h>
-#include <FastBVH/IntersectionInfo.h>
+#include <FastBVH/Intersection.h>
 #include <FastBVH/Ray.h>
 
 #include <vector>

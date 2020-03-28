@@ -105,11 +105,9 @@ int main() {
       // This is only valid for square aspect ratio images
       Ray<float> ray(camera_position, normalize(camera_u*u + camera_v*v + camera_dir*fov));
 
-      IntersectionInfo<float, Sphere<float>> I;
+      auto I = traverser.traverse(ray, false);
 
-      bool hit = traverser.getIntersection(ray, &I, false);
-
-      if(!hit) {
+      if(!I) {
         pixels[index] = pixels[index+1] = pixels[index+2] = 0.f;
       } else {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <FastBVH/IntersectionInfo.h>
+#include <FastBVH/Intersection.h>
 
 #include <cmath>
 
@@ -17,7 +17,7 @@ struct Sphere final {
 };
 
 template <typename Float>
-bool getPrimitiveIntersection(const Sphere<Float>& sphere, const Ray<Float>& ray, IntersectionInfo<Float, Sphere<Float>>* I) noexcept {
+Intersection<Float, Sphere<Float>> getPrimitiveIntersection(const Sphere<Float>& sphere, const Ray<Float>& ray) noexcept {
 
   const auto& center = sphere.center;
   const auto& r2 = sphere.r2;
@@ -31,17 +31,18 @@ bool getPrimitiveIntersection(const Sphere<Float>& sphere, const Ray<Float>& ray
 
   // Complex values: No intersection
   if (disc < 0.f) {
-    return false;
+    return Intersection<Float, Sphere<Float>>{};
   }
 
   // Assume we are not in a sphere... The first hit is the lesser valued
-  I->object = &sphere;
-  I->t = sd - sqrt(disc);
-  return true;
+  return Intersection<Float, Sphere<Float>> {
+    sd - std::sqrt(disc),
+    &sphere
+  };
 }
 
 template <typename Float>
-Vector3<Float> getNormal(const Sphere<Float>& sphere, const IntersectionInfo<Float, Sphere<Float>>& I) noexcept {
+Vector3<Float> getNormal(const Sphere<Float>& sphere, const Intersection<Float, Sphere<Float>>& I) noexcept {
   return normalize(I.hit - sphere.center);
 }
 
