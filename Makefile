@@ -6,30 +6,36 @@ CXXFLAGS := $(CXXFLAGS) -std=c++14
 
 VPATH += include/fast_bvh
 
+headers := include/FastBVH/BBox.h \
+           include/FastBVH/BVH.h \
+           include/FastBVH/IntersectionInfo.h \
+           include/FastBVH/Ray.h \
+           include/FastBVH/Traverser.h \
+           include/FastBVH/Vector3.h
+
+example_headers := examples/Log.h \
+                   examples/Sphere.h \
+                   examples/Stopwatch.h
+
+examples := examples/Basic
+
 .PHONY: all
 all: simple-target
 
 .PHONY: simple-target
-simple-target: RayTracerTest
+simple-target: $(examples)
 
-RayTracerTest: RayTracerTest.o
-	$(CXX) $(LDFLAGS) $^ -o $@ $(LDLIBS)
+examples/Basic: examples/Basic.cpp $(headers) $(example_headers)
 
-RayTracerTest.o: RayTracerTest.cpp BVH.h BBox.h Ray.h Vector3.h Log.h \
- Object.h IntersectionInfo.h Sphere.h
-
-BBox.o: BBox.cpp BBox.h Ray.h Vector3.h Log.h
-
-BVH.o: BVH.cpp BVH.h BBox.h Ray.h Vector3.h Log.h Object.h \
- IntersectionInfo.h Stopwatch.h
+examples/%: examples/%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 .PHONY: clean
 clean:
-	$(RM) RayTracerTest *.o
+	$(RM) $(examples)
 
 .PHONY: test
-test: RayTracerTest
-	./RayTracerTest
+test:
 
 .PHONY: docs
 docs:

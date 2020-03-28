@@ -1,7 +1,7 @@
 build
 render.ppm
-RayTracerTest
 *.o
 *.obj
 *.exe
-doxygen
+doxygen/html
+examples/Basic

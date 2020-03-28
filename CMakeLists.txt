@@ -14,14 +14,14 @@ if((CMAKE_CXX_COMPILER_ID STREQUAL GNU) OR (CMAKE_CXX_COMPILER_ID MATCHES Clang)
   set(cxxflags ${gnu_cxxflags})
 endif((CMAKE_CXX_COMPILER_ID STREQUAL GNU) OR (CMAKE_CXX_COMPILER_ID MATCHES Clang))
 
-add_library(Fast_BVH INTERFACE)
+add_library(FastBVH INTERFACE)
 
-target_include_directories(Fast_BVH INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(FastBVH INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-add_executable(Fast_BVH_RayTracerTest RayTracerTest.cpp)
+add_executable(FastBVH_RayTracerTest RayTracerTest.cpp)
 
-target_link_libraries(Fast_BVH_RayTracerTest PRIVATE Fast_BVH)
+target_link_libraries(FastBVH_RayTracerTest PRIVATE FastBVH)
 
-target_compile_options(Fast_BVH_RayTracerTest PRIVATE ${cxxflags})
+target_compile_options(FastBVH_RayTracerTest PRIVATE ${cxxflags})
 
-set_target_properties(Fast_BVH_RayTracerTest PROPERTIES OUTPUT_NAME RayTracerTest)
+set_target_properties(FastBVH_RayTracerTest PROPERTIES OUTPUT_NAME RayTracerTest)

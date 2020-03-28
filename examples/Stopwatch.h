@@ -4,7 +4,7 @@
 
 namespace FastBVH {
 
-//! Used for profiling the performance
+//! \brief Used for profiling the performance
 //! of the BVH construction.
 class Stopwatch final {
   //! A type definition for the clock used by this class.

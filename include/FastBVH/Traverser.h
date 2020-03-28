@@ -1,12 +1,13 @@
 #pragma once
 
-#include <fast_bvh/BVH.h>
+#include <FastBVH/BVH.h>
 
 namespace FastBVH {
 
-//! Used for traversing a BVH
-//! and checking for ray-object
-//! intersections.
+//! \brief Used for traversing a BVH
+//! and checking for ray-primitive intersections.
+//! \tparam Float The floating point type used by vector components.
+//! \tparam Primitive The type of the primitive that the BVH was made with.
 template <typename Float, typename Primitive>
 class Traverser final {
   //! The BVH to be traversed.
@@ -23,13 +24,19 @@ public:
   bool getIntersection(const Ray<Float>& ray, IntersectionInfo<Float, Primitive> *intersection, bool occlusion) const;
 };
 
-//! Node for storing state information during traversal.
+//! \brief Node for storing state information during traversal.
 template <typename Float>
 struct BVHTraversal final {
-  uint32_t i; // Node
-  Float mint; // Minimum hit time for this node.
-  BVHTraversal() { }
-  BVHTraversal(int _i, Float _mint) : i(_i), mint(_mint) { }
+  //! The index of the node to be traversed.
+  uint32_t i;
+  //! Minimum hit time for this node.
+  Float mint;
+  //! Constructs an uninitialized instance of a traversal context.
+  constexpr BVHTraversal() noexcept { }
+  //! Constructs an initialized traversal context.
+  //! \param i_ The index of the node to be traversed.
+  constexpr BVHTraversal(int i_, Float mint_) noexcept
+    : i(i_), mint(mint_) { }
 };
 
 template <typename Float, typename Primitive>

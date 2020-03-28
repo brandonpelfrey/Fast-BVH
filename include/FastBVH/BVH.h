@@ -1,82 +1,89 @@
 #pragma once
 
-#include <fast_bvh/BBox.h>
-#include <fast_bvh/Object.h>
-#include <fast_bvh/IntersectionInfo.h>
-#include <fast_bvh/Log.h>
-#include <fast_bvh/Ray.h>
-#include <fast_bvh/Stopwatch.h>
+#include <FastBVH/BBox.h>
+#include <FastBVH/IntersectionInfo.h>
+#include <FastBVH/Ray.h>
 
 #include <vector>
 
 #include <cstdint>
 
+//! \brief This namespace contains all the declarations
+//! in the library. All declarations in this namespace,
+//! with some exceptions, are available for end-users.
 namespace FastBVH {
 
-//! Node descriptor for the flattened tree
+//! \brief Node descriptor for the flattened tree
+//! \tparam Float The floating point type
+//! used for the bounding box vectors.
 template <typename Float>
 struct BVHFlatNode final {
+  //! The bounding box of the node.
   BBox<Float> bbox;
+  //! The index of the first primitive.
   uint32_t start;
+  //! The number of primitives in this node.
   uint32_t nPrims;
   uint32_t rightOffset;
 };
 
 //! \author Brandon Pelfrey
-//! A Bounding Volume Hierarchy system for fast Ray-Object intersection tests
+//! \brief A Bounding Volume Hierarchy system for fast Ray-Object intersection tests
 template <typename Float, typename Primitive>
 class BVH final {
-  uint32_t nNodes;
+  //! The number of leafs in the BVH.
   uint32_t nLeafs;
+  //! The number of primitives in a single leaf.
   uint32_t leafSize;
+  //! The array of primitives used to construct
+  //! the BVH.
   std::vector<Primitive> build_prims;
+  //! An array of nodes used for fast iteration
+  //! of the BVH, using iteration.
+  std::vector<BVHFlatNode<Float>> flatTree;
+public:
+  //! Constructs a new BVH instance.
+  BVH() : nLeafs(0), leafSize(4) {}
+  //! Builds the BVH. This function may be called more than once.
+  //! At each call to this function, the nodes in the BVH are cleared
+  //! and then remade based on the new data.
+  //! \param objects The primitives to build the BVH from.
+  //! \param leafSize The number of primitives per leaf.
+  void build(std::vector<Primitive>&& objects, uint32_t leafSize = 4) {
 
-  //! Build the BVH tree out of build_prims
-  void build();
+    this->nLeafs = 0;
+    this->leafSize = leafSize;
+    this->build_prims = std::move(objects);
+    this->flatTree.clear();
 
-  // Fast Traversal System
-  BVHFlatNode<Float> *flatTree;
-
-  public:
-  BVH(std::vector<Primitive>&& objects, uint32_t leafSize=4);
-  ~BVH();
+    this->build();
+  }
+  //! Gets the number of leafs in the BVH.
+  //! \return The number of leafs in the BVH.
+  inline auto getLeafCount() const noexcept {
+    return nLeafs;
+  }
   //! Accesses the BVH nodes.
   //! \return A pointer to the nodes in the BVH.
   inline const auto* getNodes() const noexcept {
-    return flatTree;
+    return flatTree.data();
   }
   //! Gets the number of nodes in the BVH.
   //! \return The node count of the BVH.
   inline auto getNodeCount() const noexcept {
-    return nNodes;
+    return flatTree.size();
   }
   //! Accesses a pointer to the primitives in the BVH.
   //! \return A const pointer to the primitive array.
   inline const auto* getPrimitives() const noexcept {
     return build_prims.data();
   }
+protected:
+  //! Build the BVH tree out of build_prims
+  void build();
 };
 
-template <typename Float, typename Primitive>
-BVH<Float, Primitive>::~BVH() {
-  delete[] flatTree;
-}
-
-template <typename Float, typename Primitive>
-BVH<Float, Primitive>::BVH(std::vector<Primitive>&& objects, uint32_t leafSize)
-  : nNodes(0), nLeafs(0), leafSize(leafSize), build_prims(std::move(objects)), flatTree(NULL) {
-
-    Stopwatch sw;
-
-    // Build the tree based on the input object data set.
-    build();
-
-    // Output tree build time and statistics
-    double constructionTime = sw.read();
-    LOG_STAT("Built BVH (%d nodes, with %d leafs) in %d ms", nNodes, nLeafs, (int)(1000*constructionTime));
-  }
-
-//! Contains the context used while building
+//! \brief Contains the context used while building
 //! a specific node in the BVH.
 struct BuildEntry final {
   //! If non-zero then this is the index of the parent. (used in offsets)
@@ -103,6 +110,7 @@ void BVH<Float, Primitive>::build() {
   uint32_t stackptr = 0;
   const uint32_t Untouched    = 0xffffffff;
   const uint32_t TouchedTwice = 0xfffffffd;
+  uint32_t nNodes = 0;
 
   // Push the root
   todo[stackptr].start = 0;
@@ -193,10 +201,11 @@ void BVH<Float, Primitive>::build() {
     stackptr++;
   }
 
-  // Copy the temp node data to a flat array
-  flatTree = new BVHFlatNode<Float>[nNodes];
-  for(uint32_t n=0; n<nNodes; ++n) 
+  flatTree.resize(nNodes);
+
+  for (uint32_t n = 0; n < nNodes; n++) {
     flatTree[n] = buildnodes[n];
+  }
 }
 
 } // namespace FastBVH
