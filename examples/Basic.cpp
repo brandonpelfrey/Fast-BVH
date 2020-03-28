@@ -5,7 +5,9 @@
 #include <FastBVH/BVH.h>
 #include <FastBVH/Traverser.h>
 
+#include "Log.h"
 #include "Sphere.h"
+#include "Stopwatch.h"
 
 using std::vector;
 
@@ -35,8 +37,18 @@ int main() {
 
   BVH<float, Sphere<float>> bvh;
 
+  Stopwatch sw;
+
   // Compute a BVH for this object set
   bvh.build(std::move(objects));
+
+  // Output tree build time and statistics
+  double constructionTime = sw.read();
+
+  LOG_STAT("Built BVH (%u nodes, with %u leafs) in %.02f ms",
+           (unsigned int) bvh.getNodeCount(),
+           (unsigned int) bvh.getLeafCount(),
+           1000.0 * constructionTime);
 
   // Allocate space for some image pixels
   const unsigned int width=800, height=800;

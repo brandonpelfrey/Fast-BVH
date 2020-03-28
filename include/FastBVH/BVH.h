@@ -2,9 +2,7 @@
 
 #include <FastBVH/BBox.h>
 #include <FastBVH/IntersectionInfo.h>
-#include <FastBVH/Log.h>
 #include <FastBVH/Ray.h>
-#include <FastBVH/Stopwatch.h>
 
 #include <vector>
 
@@ -58,17 +56,12 @@ public:
     this->build_prims = std::move(objects);
     this->flatTree.clear();
 
-    Stopwatch sw;
-
     this->build();
-
-    // Output tree build time and statistics
-    double constructionTime = sw.read();
-
-    LOG_STAT("Built BVH (%u nodes, with %u leafs) in %.02f ms",
-             (unsigned int) flatTree.size(),
-             (unsigned int) nLeafs,
-             1000.0 * constructionTime);
+  }
+  //! Gets the number of leafs in the BVH.
+  //! \return The number of leafs in the BVH.
+  inline auto getLeafCount() const noexcept {
+    return nLeafs;
   }
   //! Accesses the BVH nodes.
   //! \return A pointer to the nodes in the BVH.
