@@ -35,8 +35,8 @@ float BBox::surfaceArea() const {
 
 // http://www.flipcode.com/archives/SSE_RayBox_Intersection_Test.shtml
 // turn those verbose intrinsics into something readable.
-#define loadps(mem)		_mm_load_ps((const float * const)(mem))
-#define storess(ss,mem)		_mm_store_ss((float * const)(mem),(ss))
+#define loadps(mem)		_mm_load_ps((const float *)(mem))
+#define storess(ss,mem)		_mm_store_ss((float *)(mem),(ss))
 #define minss			_mm_min_ss
 #define maxss			_mm_max_ss
 #define minps			_mm_min_ps
