@@ -43,11 +43,12 @@ class BVH final {
 };
 
 //! Node for storing state information during traversal.
+template <typename Float>
 struct BVHTraversal final {
   uint32_t i; // Node
-  float mint; // Minimum hit time for this node.
+  Float mint; // Minimum hit time for this node.
   BVHTraversal() { }
-  BVHTraversal(int _i, float _mint) : i(_i), mint(_mint) { }
+  BVHTraversal(int _i, Float _mint) : i(_i), mint(_mint) { }
 };
 
 //! - Compute the nearest intersection of all objects within the tree.
@@ -64,7 +65,7 @@ bool BVH<Float>::getIntersection(const Ray<Float>& ray, IntersectionInfo<Float>*
   int32_t closer, other;
 
   // Working set
-  BVHTraversal todo[64];
+  BVHTraversal<Float> todo[64];
   int32_t stackptr = 0;
 
   // "Push" on the root node to the working set
@@ -126,18 +127,18 @@ bool BVH<Float>::getIntersection(const Ray<Float>& ray, IntersectionInfo<Float>*
         // check the further-awar node later...
 
         // Push the farther first
-        todo[++stackptr] = BVHTraversal(other, bbhits[2]);
+        todo[++stackptr] = BVHTraversal<Float>(other, bbhits[2]);
 
         // And now the closer (with overlap test)
-        todo[++stackptr] = BVHTraversal(closer, bbhits[0]);
+        todo[++stackptr] = BVHTraversal<Float>(closer, bbhits[0]);
       }
 
       else if (hitc0) {
-        todo[++stackptr] = BVHTraversal(ni+1, bbhits[0]);
+        todo[++stackptr] = BVHTraversal<Float>(ni+1, bbhits[0]);
       }
 
       else if(hitc1) {
-        todo[++stackptr] = BVHTraversal(ni + node.rightOffset, bbhits[2]);
+        todo[++stackptr] = BVHTraversal<Float>(ni + node.rightOffset, bbhits[2]);
       }
 
     }
@@ -251,7 +252,7 @@ void BVH<Float>::build()
     uint32_t split_dim = bc.maxDimension();
 
     // Split on the center of the longest axis
-    float split_coord = .5f * (bc.min[split_dim] + bc.max[split_dim]);
+    Float split_coord = .5f * (bc.min[split_dim] + bc.max[split_dim]);
 
     // Partition the list of objects on this split
     uint32_t mid = start;

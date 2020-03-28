@@ -49,15 +49,15 @@ struct BBox final {
 template <typename Float>
 bool BBox<Float>::intersect(const Ray<Float>& ray, Float *tnear, Float *tfar) const noexcept {
 
-  float tmin = (min.x - ray.o.x) / ray.d.x;
-  float tmax = (max.x - ray.o.x) / ray.d.x;
+  Float tmin = (min.x - ray.o.x) / ray.d.x;
+  Float tmax = (max.x - ray.o.x) / ray.d.x;
 
   if (tmin > tmax) {
     std::swap(tmin, tmax);
   }
 
-  float tymin = (min.y - ray.o.y) / ray.d.y;
-  float tymax = (max.y - ray.o.y) / ray.d.y;
+  Float tymin = (min.y - ray.o.y) / ray.d.y;
+  Float tymax = (max.y - ray.o.y) / ray.d.y;
 
   if (tymin > tymax) {
     std::swap(tymin, tymax);
@@ -75,8 +75,8 @@ bool BBox<Float>::intersect(const Ray<Float>& ray, Float *tnear, Float *tfar) co
     tmax = tymax;
   }
 
-  float tzmin = (min.z - ray.o.z) / ray.d.z;
-  float tzmax = (max.z - ray.o.z) / ray.d.z;
+  Float tzmin = (min.z - ray.o.z) / ray.d.z;
+  Float tzmax = (max.z - ray.o.z) / ray.d.z;
 
   if (tzmin > tzmax) {
     std::swap(tzmin, tzmax);

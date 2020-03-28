@@ -4,7 +4,7 @@
 
 namespace FastBVH {
 
-template <typename Float = float>
+template <typename Float>
 struct Vector3 final {
 
   Float x;
