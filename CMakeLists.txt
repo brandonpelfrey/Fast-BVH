@@ -16,7 +16,7 @@ endif((CMAKE_CXX_COMPILER_ID STREQUAL GNU) OR (CMAKE_CXX_COMPILER_ID MATCHES Cla
 
 add_library(Fast_BVH INTERFACE)
 
-target_include_directories(Fast_BVH INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(Fast_BVH INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_executable(Fast_BVH_RayTracerTest RayTracerTest.cpp)
 

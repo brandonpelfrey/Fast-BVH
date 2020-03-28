@@ -1,7 +1,9 @@
 #include <cstdio>
 #include <vector>
 #include <cstdlib>
-#include "BVH.h"
+
+#include <fast_bvh/BVH.h>
+
 #include "Sphere.h"
 
 using std::vector;

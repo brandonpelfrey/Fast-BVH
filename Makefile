@@ -1,4 +1,8 @@
 CXXFLAGS := -Wall -Wextra -Werror -Wfatal-errors
+CXXFLAGS := $(CXXFLAGS) -I $(CURDIR)/include
+CXXFLAGS := $(CXXFLAGS) -std=c++14
+
+VPATH += include/fast_bvh
 
 .PHONY: all
 all: simple-target

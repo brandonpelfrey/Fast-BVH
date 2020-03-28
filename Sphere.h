@@ -1,7 +1,8 @@
 #pragma once
 
+#include <fast_bvh/Object.h>
+
 #include <cmath>
-#include "Object.h"
 
 namespace FastBVH {
 
