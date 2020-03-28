@@ -28,6 +28,7 @@ In CMake, `FastBVH` is an "interface" library. This means that it's only meant t
 Most ray tracers use primitive shapes to build a scene.
 For this example, we'll be using a sphere as a primitive shape.
 Just note that we could also be using a triangle, a voxel, or polygonal surface.
+Here's an example of our scene so far:
 
 ```cxx
 #include <vector>
@@ -50,19 +51,71 @@ int main() {
 }
 ```
 
-### Building a BVH
+In order to glue this scene to a format that Fast-BVH can use, we'll need to
+define a class that converts our spheres to bounding boxes. We'll call this
+class `SphereBoxConverter`.
 
-Now that you've got the project in a usable format, you can start building your first BVH.
+```cxx
+#include <FastBVH/BBox.h>
+
+class SphereBoxConverter final {
+public:
+  FastBVH::BBox<float> operator () (const Sphere<float>& s) const noexcept {
+
+    FastBVH::Vector3<float> min {
+      s.x - s.radius,
+      s.y - s.radius,
+      s.z - s.radius
+    };
+
+    FastBVH::Vector3<float> max {
+      s.x + s.radius,
+      s.y + s.radius,
+      s.z + s.radius
+    };
+
+    return FastBVH::BBox<float>(min, max);
+  }
+};
+```
+
+We could also have done this in a lambda functor:
+
+```cxx
+auto boxConverter = [](const Sphere<float>& s) {
+
+  /* Calculate min and max */
+
+  return FastBVH::BBox<float>(min, max);
+};
+```
+
+Now we're ready to create our first BVH.
+
+### Building a BVH
 
 Start by including the directory for the @ref FastBVH::BVH data structure.
 
 ```cxx
 #include <FastBVH/BVH.h>
 
+/* SphereBoxConverter goes here */
+
 int main() {
+
+  /* Create spheres as above */
+
+  FastBVH::BVH<float, Sphere> bvh;
+
+  SphereBoxConverter boxConverter;
+
+  bvh.build(spheres, boxConverter);
+
+  /* We now have our first BVH! */
 
   return 0;
 }
 ```
 
+### Traversing the BVH
 
