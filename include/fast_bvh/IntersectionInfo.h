@@ -4,7 +4,7 @@
 
 namespace FastBVH {
 
-//! Stores information regarding a ray intersection with a primitive.
+//! \brief Stores information regarding a ray intersection with a primitive.
 //! \tparam Float The floating point type used for vector components.
 //! \tparam Primitive The type of primitive used to construct the BVH.
 template <typename Float, typename Primitive>

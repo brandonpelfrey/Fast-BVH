@@ -11,9 +11,12 @@
 
 #include <cstdint>
 
+//! \brief This namespace contains all the declarations
+//! in the library. All declarations in this namespace,
+//! with some exceptions, are available for end-users.
 namespace FastBVH {
 
-//! Node descriptor for the flattened tree
+//! \brief Node descriptor for the flattened tree
 //! \tparam Float The floating point type
 //! used for the bounding box vectors.
 template <typename Float>
@@ -28,7 +31,7 @@ struct BVHFlatNode final {
 };
 
 //! \author Brandon Pelfrey
-//! A Bounding Volume Hierarchy system for fast Ray-Object intersection tests
+//! \brief A Bounding Volume Hierarchy system for fast Ray-Object intersection tests
 template <typename Float, typename Primitive>
 class BVH final {
   //! The number of nodes in the BVH.
@@ -87,7 +90,7 @@ BVH<Float, Primitive>::BVH(std::vector<Primitive>&& objects, uint32_t leafSize)
   LOG_STAT("Built BVH (%d nodes, with %d leafs) in %d ms", nNodes, nLeafs, (int)(1000*constructionTime));
 }
 
-//! Contains the context used while building
+//! \brief Contains the context used while building
 //! a specific node in the BVH.
 struct BuildEntry final {
   //! If non-zero then this is the index of the parent. (used in offsets)

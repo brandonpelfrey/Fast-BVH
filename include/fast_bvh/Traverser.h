@@ -4,7 +4,7 @@
 
 namespace FastBVH {
 
-//! Used for traversing a BVH
+//! \brief Used for traversing a BVH
 //! and checking for ray-primitive intersections.
 //! \tparam Float The floating point type used by vector components.
 //! \tparam Primitive The type of the primitive that the BVH was made with.
@@ -24,7 +24,7 @@ public:
   bool getIntersection(const Ray<Float>& ray, IntersectionInfo<Float, Primitive> *intersection, bool occlusion) const;
 };
 
-//! Node for storing state information during traversal.
+//! \brief Node for storing state information during traversal.
 template <typename Float>
 struct BVHTraversal final {
   //! The index of the node to be traversed.

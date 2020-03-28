@@ -4,7 +4,7 @@
 
 namespace FastBVH {
 
-//! A type-generic 3 dimensional vector.
+//! \brief A type-generic 3 dimensional vector.
 //! Used for the representation of bounding volumes
 //! as well as the representation of rays and intersections.
 //! \tparam Float The type used for the vector components.

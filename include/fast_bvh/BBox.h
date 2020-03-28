@@ -9,7 +9,7 @@
 
 namespace FastBVH {
 
-//! Represents an axis-aligned bounding box.
+//! \brief Represents an axis-aligned bounding box.
 //! This could also be called an AABB.
 //! It's used to represent the space occupied
 //! by a primitive.

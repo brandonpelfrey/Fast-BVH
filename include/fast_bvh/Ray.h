@@ -4,7 +4,7 @@
 
 namespace FastBVH {
 
-//! Represents a single ray.
+//! \brief Represents a single ray.
 //! Used for traversing the BVH for ray-primitive intersections.
 //! \tparam Float The floating point type of the rays vector components.
 template <typename Float>
