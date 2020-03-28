@@ -1,13 +1,15 @@
 #pragma once
 
-#include "BBox.h"
+#include <fast_bvh/BBox.h>
+#include <fast_bvh/Object.h>
+#include <fast_bvh/IntersectionInfo.h>
+#include <fast_bvh/Log.h>
+#include <fast_bvh/Ray.h>
+#include <fast_bvh/Stopwatch.h>
+
 #include <vector>
-#include <stdint.h>
-#include "Object.h"
-#include "IntersectionInfo.h"
-#include "Log.h"
-#include "Ray.h"
-#include "Stopwatch.h"
+
+#include <cstdint>
 
 namespace FastBVH {
 

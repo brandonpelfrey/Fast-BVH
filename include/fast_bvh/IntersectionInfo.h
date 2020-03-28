@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Vector3.h"
-#include "Object.h"
+#include <fast_bvh/Vector3.h>
+#include <fast_bvh/Object.h>
 
 namespace FastBVH {
 
