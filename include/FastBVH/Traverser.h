@@ -24,23 +24,29 @@ public:
   Intersection<Float, Primitive> traverse(const Ray<Float>& ray, bool occlusion) const;
 };
 
+namespace impl {
+
 //! \brief Node for storing state information during traversal.
 template <typename Float>
-struct BVHTraversal final {
+struct Traversal final {
   //! The index of the node to be traversed.
   uint32_t i;
   //! Minimum hit time for this node.
   Float mint;
   //! Constructs an uninitialized instance of a traversal context.
-  constexpr BVHTraversal() noexcept { }
+  constexpr Traversal() noexcept { }
   //! Constructs an initialized traversal context.
   //! \param i_ The index of the node to be traversed.
-  constexpr BVHTraversal(int i_, Float mint_) noexcept
+  constexpr Traversal(int i_, Float mint_) noexcept
     : i(i_), mint(mint_) { }
 };
 
+} // namespace impl
+
 template <typename Float, typename Primitive>
 Intersection<Float, Primitive> Traverser<Float, Primitive>::traverse(const Ray<Float>& ray, bool occlusion) const {
+
+  using Traversal = impl::Traversal<Float>;
 
   Intersection<Float, Primitive> intersection;
 
@@ -48,7 +54,7 @@ Intersection<Float, Primitive> Traverser<Float, Primitive>::traverse(const Ray<F
   int32_t closer, other;
 
   // Working set
-  BVHTraversal<Float> todo[64];
+  Traversal todo[64];
   int32_t stackptr = 0;
 
   // "Push" on the root node to the working set
@@ -112,18 +118,18 @@ Intersection<Float, Primitive> Traverser<Float, Primitive>::traverse(const Ray<F
         // check the further-awar node later...
 
         // Push the farther first
-        todo[++stackptr] = BVHTraversal<Float>(other, bbhits[2]);
+        todo[++stackptr] = Traversal(other, bbhits[2]);
 
         // And now the closer (with overlap test)
-        todo[++stackptr] = BVHTraversal<Float>(closer, bbhits[0]);
+        todo[++stackptr] = Traversal(closer, bbhits[0]);
       }
 
       else if (hitc0) {
-        todo[++stackptr] = BVHTraversal<Float>(ni+1, bbhits[0]);
+        todo[++stackptr] = Traversal(ni+1, bbhits[0]);
       }
 
       else if(hitc1) {
-        todo[++stackptr] = BVHTraversal<Float>(ni + node.rightOffset, bbhits[2]);
+        todo[++stackptr] = Traversal(ni + node.rightOffset, bbhits[2]);
       }
 
     }
