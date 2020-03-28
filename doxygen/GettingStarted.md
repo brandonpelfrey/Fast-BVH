@@ -117,5 +117,89 @@ int main() {
 }
 ```
 
+The next step is to traverse rays through the BVH, calculating the ray-primitive intersections.
+
 ### Traversing the BVH
 
+Fast-BVH comes with a BVH traverser, for the sake of convenience.
+
+In order to use it, you'll need to need to define a class that handles intersections between rays and primitives.
+
+For our sphere class, it will look like this:
+
+```cxx
+class SphereIntersector final {
+public:
+  Intersection<float, Sphere> operator () (const Sphere& sphere, const Ray<float>& ray) noexcept {
+
+    /* There's plenty of articles online on how to check
+     * for intersection between a sphere and a ray, so we
+     * won't repeat it here. We'll just name the variables
+     * that you need to make a good intersection instance. */
+
+    if (ray_missed) {
+      /* This returns an intersection instance
+       * that indicates a miss. */
+      return Intersection<float, Sphere> { };
+    }
+
+    /* You'll need to calculate these values */
+
+    /* The degree at which the ray
+     * is scaled to meet the surface of the sphere. */
+    float t = 0;
+
+    /* The surface normal at the point of intersection. */
+    FastBVH::Vector3<float> normal {
+      0,
+      0,
+      0
+    };
+
+    return Intersection<float, Sphere> {
+      t,
+      &sphere,
+      normal
+    };
+  }
+};
+```
+
+Now that we've got our intersector class ready, we can traverse our BVH!
+
+```cxx
+/* Headers from the rest of the tutorial go here */
+
+#include <FastBVH/Traverser.h>
+
+/* Classes from the rest of the tutorial go here */
+
+int main() {
+
+  /* Here the spheres are created and then the BVH is built. */
+
+  /* Generate primary rays */
+
+  SphereIntersector intersector;
+
+  BvhTraverser<float, Sphere, decltype(intersector)> traverser(bvh, intersector);
+
+  for (const auto& ray : primary_rays) {
+    auto isect = traverser.traverse(ray, false /* not an occlusion ray */);
+    if (isect) {
+      /* Ray hit. Plot the color
+       * at the intersection and queue
+       * the reflected, refracted rays */
+      plotColor(isect);
+      queueReflected(isect, reflected_rays);
+      queueRefracted(isect, refracted_rays);
+    } else {
+      /* Ray missed. Do nothing.*/
+    }
+  }
+
+  return 0;
+}
+```
+
+And there you have it! If you want a more complete example, without anything missing, you can checkout one of the examples.
