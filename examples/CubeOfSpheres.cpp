@@ -6,6 +6,7 @@
 #include <FastBVH/Traverser.h>
 
 #include "Log.h"
+#include "SimpleScheduler.h"
 #include "Stopwatch.h"
 
 namespace {
@@ -125,73 +126,34 @@ int main() {
            (unsigned int) bvh.getLeafCount(),
            1000.0 * constructionTime);
 
-  // Allocate space for some image pixels
-  const unsigned int width=800, height=800;
-  float* pixels = new float[width*height*3];
-
-  // Create a camera from position and focus point
-  Vector3<float> camera_position { 1.6, 1.3, 1.6 };
-  Vector3<float> camera_focus { 0,0,0 };
-  Vector3<float> camera_up { 0,1,0 };
-
-  // Camera tangent space
-  Vector3<float> camera_dir = normalize(camera_focus - camera_position);
-  Vector3<float> camera_u = normalize(cross(camera_dir, camera_up));
-  Vector3<float> camera_v = normalize(cross(camera_u, camera_dir));
-
   SphereIntersector<float> intersector;
 
   Traverser<float, Sphere<float>, decltype(intersector)> traverser(bvh, intersector);
 
-  printf("Rendering image (%dx%d)...\n", width, height);
-  // Raytrace over every pixel
-  for(size_t i=0; i<width; ++i) {
-    for(size_t j=0; j<height; ++j) {
-      size_t index = 3*(width * j + i);
-
-      float u = (i+.5f) / (float)(width-1) - .5f;
-      float v = (height-1-j+.5f) / (float)(height-1) - .5f;
-      float fov = .5f / tanf( 70.f * 3.14159265*.5f / 180.f);
-
-      // This is only valid for square aspect ratio images
-      Ray<float> ray(camera_position, normalize(camera_u*u + camera_v*v + camera_dir*fov));
-
-      auto I = traverser.traverse(ray, false);
-
-      if(!I) {
-        pixels[index] = pixels[index+1] = pixels[index+2] = 0.f;
-      } else {
-
-        // Just for fun, we'll make the color based on the normal
-
-        const Vector3<float> color {
-          std::fabs(I.normal.x),
-          std::fabs(I.normal.y),
-          std::fabs(I.normal.z)
-        };
-
-        pixels[index  ] = color.x;
-        pixels[index+1] = color.y;
-        pixels[index+2] = color.z;
-      }
+  auto trace_kernel = [traverser](const Ray<float>& ray) {
+    auto isect = traverser.traverse(ray, false);
+    if (isect) {
+      // Just for fun, we'll make the color based on the normal
+      return Vector3<float> {
+        std::fabs(isect.normal.x),
+        std::fabs(isect.normal.y),
+        std::fabs(isect.normal.z)
+      };
+    } else {
+      return Vector3<float> { 0, 0, 0 };
     }
-  }
+  };
 
-  // Output image file (PPM Format)
-  printf("Writing out image file: \"render.ppm\"\n");
-  FILE *image = fopen("render.ppm", "w");
-  fprintf(image, "P6\n%d %d\n255\n", width, height);
-  for(size_t j=0; j<height; ++j) {
-    for(size_t i=0; i<width; ++i) {
-      size_t index = 3*(width * j + i);
-      unsigned char r = std::max(std::min(pixels[index  ]*255.f, 255.f), 0.f);
-      unsigned char g = std::max(std::min(pixels[index+1]*255.f, 255.f), 0.f);
-      unsigned char b = std::max(std::min(pixels[index+2]*255.f, 255.f), 0.f);
-      fprintf(image, "%c%c%c", r,g,b);
-    }
-  }
-  fclose(image);
+  constexpr std::size_t width = 800;
+  constexpr std::size_t height = 800;
 
-  // Cleanup
-  delete[] pixels;
+  printf("Rendering image (%ux%u)...\n",
+         (unsigned int) width,
+         (unsigned int) height);
+
+  SimpleScheduler<float> scheduler(width, height);
+
+  scheduler.schedule(trace_kernel);
+
+  scheduler.saveResults("render.ppm");
 }
