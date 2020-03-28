@@ -32,7 +32,7 @@ int main() {
   }
 
   // Compute a BVH for this object set
-  BVH<float> bvh(&objects);
+  BVH<float> bvh(std::move(objects));
 
   // Allocate space for some image pixels
   const unsigned int width=800, height=800;

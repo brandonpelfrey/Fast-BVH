@@ -29,7 +29,7 @@ class BVH final {
   uint32_t nNodes;
   uint32_t nLeafs;
   uint32_t leafSize;
-  std::vector<Object<Float>*>* build_prims;
+  std::vector<Object<Float>*> build_prims;
 
   //! Build the BVH tree out of build_prims
   void build();
@@ -38,7 +38,7 @@ class BVH final {
   BVHFlatNode<Float> *flatTree;
 
   public:
-  BVH(std::vector<Object<Float>*>* objects, uint32_t leafSize=4);
+  BVH(std::vector<Object<Float>*>&& objects, uint32_t leafSize=4);
   ~BVH();
   //! Accesses the BVH nodes.
   //! \return A pointer to the nodes in the BVH.
@@ -53,7 +53,7 @@ class BVH final {
   //! Accesses a pointer to the primitives in the BVH.
   //! \return A const pointer to the primitive array.
   inline const auto* getPrimitives() const noexcept {
-    return build_prims->data();
+    return build_prims.data();
   }
 };
 
@@ -63,8 +63,8 @@ BVH<Float>::~BVH() {
 }
 
 template <typename Float>
-BVH<Float>::BVH(std::vector<Object<Float>*>* objects, uint32_t leafSize)
-  : nNodes(0), nLeafs(0), leafSize(leafSize), build_prims(objects), flatTree(NULL) {
+BVH<Float>::BVH(std::vector<Object<Float>*>&& objects, uint32_t leafSize)
+  : nNodes(0), nLeafs(0), leafSize(leafSize), build_prims(std::move(objects)), flatTree(NULL) {
     Stopwatch sw;
 
     // Build the tree based on the input object data set.
@@ -100,13 +100,13 @@ void BVH<Float>::build()
 
   // Push the root
   todo[stackptr].start = 0;
-  todo[stackptr].end = build_prims->size();
+  todo[stackptr].end = build_prims.size();
   todo[stackptr].parent = 0xfffffffc;
   stackptr++;
 
   BVHFlatNode<Float> node;
   std::vector<BVHFlatNode<Float>> buildnodes;
-  buildnodes.reserve(build_prims->size()*2);
+  buildnodes.reserve(build_prims.size()*2);
 
   while(stackptr > 0) {
     // Pop the next item off of the stack
@@ -121,11 +121,11 @@ void BVH<Float>::build()
     node.rightOffset = Untouched;
 
     // Calculate the bounding box for this node
-    BBox<Float> bb( (*build_prims)[start]->getBBox());
-    BBox<Float> bc( (*build_prims)[start]->getCentroid());
+    BBox<Float> bb( build_prims[start]->getBBox());
+    BBox<Float> bc( build_prims[start]->getCentroid());
     for(uint32_t p = start+1; p < end; ++p) {
-      bb.expandToInclude( (*build_prims)[p]->getBBox());
-      bc.expandToInclude( (*build_prims)[p]->getCentroid());
+      bb.expandToInclude( build_prims[p]->getBBox());
+      bc.expandToInclude( build_prims[p]->getCentroid());
     }
     node.bbox = bb;
 
@@ -163,8 +163,8 @@ void BVH<Float>::build()
     // Partition the list of objects on this split
     uint32_t mid = start;
     for(uint32_t i=start;i<end;++i) {
-      if( (*build_prims)[i]->getCentroid()[split_dim] < split_coord ) {
-        std::swap( (*build_prims)[i], (*build_prims)[mid] );
+      if( build_prims[i]->getCentroid()[split_dim] < split_coord ) {
+        std::swap( build_prims[i], build_prims[mid] );
         ++mid;
       }
     }
