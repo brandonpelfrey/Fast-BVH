@@ -1,7 +1,7 @@
 DOXYGEN := doxygen
 
 CXXFLAGS := -Wall -Wextra -Werror -Wfatal-errors
-CXXFLAGS := $(CXXFLAGS) -I $(CURDIR)/include
+CXXFLAGS := $(CXXFLAGS) -I $(CURDIR)/include 
 CXXFLAGS := $(CXXFLAGS) -std=c++14
 
 VPATH += include/fast_bvh
@@ -14,9 +14,10 @@ headers := include/FastBVH/BBox.h \
            include/FastBVH/Vector3.h
 
 example_headers := examples/Log.h \
-                   examples/Stopwatch.h
+                   examples/Stopwatch.h \
+                   examples/tiny_obj_loader.h
 
-examples := examples/CubeOfSpheres
+examples := examples/CubeOfSpheres examples/ObjFile
 
 .PHONY: all
 all: simple-target
@@ -25,6 +26,9 @@ all: simple-target
 simple-target: $(examples)
 
 examples/CubeOfSpheres: examples/CubeOfSpheres.cpp $(headers) $(example_headers)
+
+examples/ObjFile: examples/ObjFile.cpp $(headers) $(example_headers)
+	$(CXX) $(CXXFLAGS) -I $(CURDIR)/examples examples/tiny_obj_loader.cc $< -o $@
 
 examples/%: examples/%.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@

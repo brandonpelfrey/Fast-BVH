@@ -20,10 +20,15 @@ template <typename Float>
 struct BVHFlatNode final {
   //! The bounding box of the node.
   BBox<Float> bbox;
+
   //! The index of the first primitive.
   uint32_t start;
+
   //! The number of primitives in this node.
   uint32_t nPrims;
+
+  //! Number of elements to skip in flattened tree to get to a left child's sibling. 
+  //! (Node+1 == Node's left child , Node + rightOffset == Node's right child)
   uint32_t rightOffset;
 };
 
@@ -33,17 +38,22 @@ template <typename Float, typename Primitive>
 class BVH final {
   //! The number of leafs in the BVH.
   uint32_t nLeafs;
+
   //! The number of primitives in a single leaf.
   uint32_t leafSize;
+  
   //! The array of primitives used to construct
   //! the BVH.
   std::vector<Primitive> build_prims;
+
   //! An array of nodes used for fast iteration
   //! of the BVH, using iteration.
   std::vector<BVHFlatNode<Float>> flatTree;
+
 public:
   //! Constructs a new BVH instance.
   BVH() : nLeafs(0), leafSize(4) {}
+
   //! Builds the BVH. This function may be called more than once.
   //! At each call to this function, the nodes in the BVH are cleared
   //! and then remade based on the new data.
@@ -60,26 +70,31 @@ public:
 
     this->build(converter);
   }
+
   //! Gets the number of leafs in the BVH.
   //! \return The number of leafs in the BVH.
   inline auto getLeafCount() const noexcept {
     return nLeafs;
   }
+
   //! Accesses the BVH nodes.
   //! \return A pointer to the nodes in the BVH.
   inline const auto* getNodes() const noexcept {
     return flatTree.data();
   }
+
   //! Gets the number of nodes in the BVH.
   //! \return The node count of the BVH.
   inline auto getNodeCount() const noexcept {
     return flatTree.size();
   }
+
   //! Accesses a pointer to the primitives in the BVH.
   //! \return A const pointer to the primitive array.
   inline const auto* getPrimitives() const noexcept {
     return build_prims.data();
   }
+
 protected:
   //! Build the BVH tree out of build_prims
   //! \param converter The primitive to bounding box converter.
@@ -92,8 +107,10 @@ protected:
 struct BuildEntry final {
   //! If non-zero then this is the index of the parent. (used in offsets)
   uint32_t parent;
+  
   //! The starting index of the range of primitives in this node.
   uint32_t start;
+
   //! The ending index of the range of primitives in this node.
   uint32_t end;
 };

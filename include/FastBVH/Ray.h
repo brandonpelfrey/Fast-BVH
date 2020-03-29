@@ -15,8 +15,10 @@ struct Ray final {
 
   //! The origin point of the ray.
   Vec3 o;
+  
   //! The direction of the ray.
   Vec3 d;
+
   //! The reciprocal of the ray direction.
   //! Since the reciprocal ray direction is used
   //! quite often, saving the value here saves a
