@@ -23,8 +23,10 @@ struct BBox final {
 
   //! The minimum point of the bounding box.
   Vec3 min;
+
   //! The maximum point of the bounding box.
   Vec3 max;
+
   //! The difference between the max and min
   //! points of the bounding box.
   Vec3 extent;
@@ -86,7 +88,7 @@ struct BBox final {
   //! Calculates the surface area of the box.
   //! \return The surface area of the bounding box.
   constexpr Float surfaceArea() const noexcept {
-    return 2.0f * ((extent.x * extent.z) + (extent.x * extent.y) + (extent.y * extent.z));
+    return Float(2) * ((extent.x * extent.z) + (extent.x * extent.y) + (extent.y * extent.z));
   }
 };
 
@@ -136,17 +138,14 @@ bool BBox<Float>::intersect(const Ray<Float>& ray, Float *tnear, Float *tfar) co
 
 template <typename Float>
 uint32_t BBox<Float>::maxDimension() const noexcept {
-
+  // Assume X axis is longest first
   uint32_t result = 0;
 
-  if (extent.y > extent.x) {
+  if(extent[1] > extent[result])
     result = 1;
-    if (extent.z > extent.y) {
-      result = 2;
-    }
-  } else if (extent.z > extent.x) {
+
+  if(extent[2] > extent[result])
     result = 2;
-  }
 
   return result;
 }

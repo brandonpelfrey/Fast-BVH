@@ -9,7 +9,7 @@ namespace FastBVH {
 //! as well as the representation of rays and intersections.
 //! \tparam Float The type used for the vector components.
 template <typename Float>
-struct Vector3 final {
+struct alignas(sizeof(float)*4) Vector3 final {
 
   //! The X component of the vector.
   Float x;
@@ -17,17 +17,13 @@ struct Vector3 final {
   Float y;
   //! The Z component of the vector.
   Float z;
-  //! This is an used component, used
-  //! for padding and SSE compatibility.
-  Float w = 1;
 
   //! Adds two vectors.
   Vector3 operator+(const Vector3& b) const noexcept {
     return Vector3 {
       x + b.x,
       y + b.y,
-      z + b.z,
-      w + b.w
+      z + b.z
     };
   }
 
@@ -36,8 +32,7 @@ struct Vector3 final {
     return Vector3 {
       x - b.x,
       y - b.y,
-      z - b.z,
-      w - b.w
+      z - b.z
     };
   }
 
@@ -46,8 +41,7 @@ struct Vector3 final {
     return Vector3 {
       x * b,
       y * b,
-      z * b,
-      w * b
+      z * b
     };
   }
 
@@ -56,8 +50,7 @@ struct Vector3 final {
     return Vector3 {
       x / b,
       y / b,
-      z / b,
-      w / b
+      z / b
     };
   }
 
@@ -67,8 +60,7 @@ struct Vector3 final {
     return Vector3 {
       x * b.x,
       y * b.y,
-      z * b.z,
-      w * b.w
+      z * b.z
     };
   }
 
@@ -77,8 +69,7 @@ struct Vector3 final {
     return Vector3 {
       x / b.x,
       y / b.y,
-      z / b.z,
-      w / b.w
+      z / b.z
     };
   }
 
@@ -87,8 +78,7 @@ struct Vector3 final {
     return Vector3 {
       x / b.x,
       y / b.y,
-      z / b.z,
-      w / b.w
+      z / b.z
     };
   }
 
@@ -132,8 +122,7 @@ inline Vector3<Float> min(const Vector3<Float>& a,
   return Vector3<Float> {
     std::fmin(a.x, b.x),
     std::fmin(a.y, b.y),
-    std::fmin(a.z, b.z),
-    std::fmin(a.w, b.w)
+    std::fmin(a.z, b.z)
   };
 }
 
@@ -146,8 +135,7 @@ inline Vector3<Float> max(const Vector3<Float>& a,
   return Vector3<Float> {
     std::fmax(a.x, b.x),
     std::fmax(a.y, b.y),
-    std::fmax(a.z, b.z),
-    std::fmax(a.w, b.w)
+    std::fmax(a.z, b.z)
   };
 }
 

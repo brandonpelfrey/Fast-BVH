@@ -275,7 +275,6 @@ FastBVH::Vector3<float> findGoodCameraPosition(const FastBVH::BVH<float, uint32_
 int main(int argc, char** argv) {
 
   const char* filename = (argc > 1) ? argv[1] : nullptr;
-
   if (!filename) {
     std::fprintf(stderr, "No .obj file provided.\n");
     return EXIT_FAILURE;
@@ -284,9 +283,7 @@ int main(int argc, char** argv) {
   tinyobj::ObjReader reader;
 
   std::printf("Reading '%s'\n", filename);
-
   if (!reader.ParseFromFile(filename)) {
-
     std::fprintf(stderr, "%s: %s",
                  filename,
                  reader.Error().c_str());
@@ -295,39 +292,30 @@ int main(int argc, char** argv) {
   }
 
   std::printf("Combining faces\n");
-
   auto faces = combineFaces(reader.GetShapes());
 
   std::vector<std::uint32_t> face_indices;
-
   face_indices.resize(faces.size());
-
   for (std::size_t i = 0; i < face_indices.size(); i++) {
     face_indices[i] = std::uint32_t(i);
   }
 
   std::printf("Building BVH\n");
-
   FastBVH::Stopwatch stopwatch;
 
   FaceBoxConverter boxConverter(reader.GetAttrib(), faces);
-
   FastBVH::BVH<float, std::uint32_t> bvh;
-
   bvh.build(std::move(face_indices), boxConverter);
 
   auto time = stopwatch.read();
-
   std::printf("Completing BVH in %.02f ms\n", time * 1000.0);
 
   stopwatch.reset();
-
   FaceIntersector intersector(reader.GetAttrib(), faces);
 
   FastBVH::Traverser<float, uint32_t, decltype(intersector)> traverser(bvh, intersector);
-
   auto traceKernel = [traverser](const FastBVH::Ray<float>& ray) {
-    auto isect = traverser.traverse(ray, false);
+    auto isect = traverser.traverse(ray);
     if (isect) {
       return FastBVH::Vector3<float> { isect.uv[0], isect.uv[1], 1 };
     } else {
@@ -336,16 +324,12 @@ int main(int argc, char** argv) {
   };
 
   FastBVH::SimpleScheduler<float> scheduler(800, 800);
-
   scheduler.moveCamera(findGoodCameraPosition(bvh));
-
   scheduler.schedule(traceKernel);
 
   time = stopwatch.read();
-
   std::printf("Model rendered in %.02f ms\n", time * 1000.0);
 
   scheduler.saveResults("render2.ppm");
-
   return EXIT_SUCCESS;
 }
