@@ -1,0 +1,7 @@
+build
+render.ppm
+*.o
+*.obj
+*.exe
+doxygen/html
+examples/CubeOfSpheres
