@@ -1,13 +1,13 @@
-#include <cstdio>
-#include <vector>
-#include <cstdlib>
-
-#include <FastBVH/BVH.h>
-#include <FastBVH/Traverser.h>
+#include <FastBVH.h>
 
 #include "Log.h"
 #include "SimpleScheduler.h"
 #include "Stopwatch.h"
+
+#include <vector>
+
+#include <cstdio>
+#include <cstdlib>
 
 namespace {
 
@@ -109,21 +109,20 @@ int main() {
     objects.emplace_back(Sphere<float>(randVector3(), .005f));
   }
 
-  BVH<float, Sphere<float>> bvh;
-
-  SphereBoxConverter<float> boxConverter;
+  SphereBoxConverter<float> box_converter;
 
   Stopwatch sw;
 
-  // Compute a BVH for this object set
-  bvh.build(std::move(objects), boxConverter);
+  FastBVH::BuildStrategy<float, 1> build_strategy;
+
+  auto bvh = build_strategy(objects, box_converter);
 
   // Output tree build time and statistics
   double constructionTime = sw.read();
 
   LOG_STAT("Built BVH (%u nodes, with %u leafs) in %.02f ms",
-           (unsigned int) bvh.getNodeCount(),
-           (unsigned int) bvh.getLeafCount(),
+           (unsigned int) bvh.getNodes().size(),
+           (unsigned int) bvh.countLeafs(),
            1000.0 * constructionTime);
 
   SphereIntersector<float> intersector;

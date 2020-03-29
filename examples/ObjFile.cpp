@@ -1,5 +1,4 @@
-#include <FastBVH/BVH.h>
-#include <FastBVH/Traverser.h>
+#include <FastBVH.h>
 
 #include <algorithm>
 #include <vector>
@@ -253,7 +252,7 @@ FastBVH::Vector3<float> findGoodCameraPosition(const FastBVH::BVH<float, uint32_
 
   FastBVH::Vector3<float> pos { 0, 0, -1 };
 
-  if (!bvh.getNodeCount()) {
+  if (!bvh.getNodes().size()) {
     return pos;
   }
 
@@ -310,11 +309,11 @@ int main(int argc, char** argv) {
 
   FastBVH::Stopwatch stopwatch;
 
-  FaceBoxConverter boxConverter(reader.GetAttrib(), faces);
+  FaceBoxConverter box_converter(reader.GetAttrib(), faces);
 
-  FastBVH::BVH<float, std::uint32_t> bvh;
+  FastBVH::BuildStrategy<float, 1> build_strategy;
 
-  bvh.build(std::move(face_indices), boxConverter);
+  auto bvh = build_strategy(face_indices, box_converter);
 
   auto time = stopwatch.read();
 

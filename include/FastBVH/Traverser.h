@@ -18,7 +18,8 @@ class Traverser final {
 public:
   //! Constructs a new BVH traverser.
   //! \param bvh_ The BVH to be traversed.
-  constexpr Traverser(const BVH<Float, Primitive>& bvh_, const Intersector& intersector_) noexcept
+  constexpr Traverser(const BVH<Float, Primitive>& bvh_,
+                      const Intersector& intersector_) noexcept
     : bvh(bvh_), intersector(intersector_) {}
   //! Traces a single ray throughout the BVH, getting the closest intersection.
   //! \param ray The ray to be traced.
@@ -66,25 +67,24 @@ Intersection<Float, Primitive> Traverser<Float, Primitive, Intersector>::travers
   todo[stackptr].i = 0;
   todo[stackptr].mint = -9999999.f;
 
-  const auto* flatTree = bvh.getNodes();
+  const auto nodes = bvh.getNodes();
 
-  const auto* build_prims = bvh.getPrimitives();
+  auto build_prims = bvh.getPrimitives();
 
   while(stackptr>=0) {
     // Pop off the next node to work on.
     int ni = todo[stackptr].i;
     Float near = todo[stackptr].mint;
     stackptr--;
-    const auto &node(flatTree[ ni ]);
+    const auto &node(nodes[ ni ]);
 
     // If this node is further than the closest found intersection, continue
     if(near > intersection.t)
       continue;
 
-    // Is leaf -> Intersect
-    if( node.rightOffset == 0 ) {
+    if (node.isLeaf()) {
 
-      for(uint32_t o=0;o<node.nPrims;++o) {
+      for(uint32_t o=0;o<node.primitive_count;++o) {
 
         const auto& obj = build_prims[node.start + o];
 
@@ -100,15 +100,15 @@ Intersection<Float, Primitive> Traverser<Float, Primitive, Intersector>::travers
 
     } else { // Not a leaf
 
-      bool hitc0 = flatTree[ni+1].bbox.intersect(ray, bbhits, bbhits+1);
-      bool hitc1 = flatTree[ni+node.rightOffset].bbox.intersect(ray, bbhits+2, bbhits+3);
+      bool hitc0 = nodes[ni+1].bbox.intersect(ray, bbhits, bbhits+1);
+      bool hitc1 = nodes[ni+node.right_offset].bbox.intersect(ray, bbhits+2, bbhits+3);
 
       // Did we hit both nodes?
       if(hitc0 && hitc1) {
 
         // We assume that the left child is a closer hit...
         closer = ni+1;
-        other = ni+node.rightOffset;
+        other = ni+node.right_offset;
 
         // ... If the right child was actually closer, swap the relavent values.
         if(bbhits[2] < bbhits[0]) {
@@ -132,7 +132,7 @@ Intersection<Float, Primitive> Traverser<Float, Primitive, Intersector>::travers
       }
 
       else if(hitc1) {
-        todo[++stackptr] = Traversal(ni + node.rightOffset, bbhits[2]);
+        todo[++stackptr] = Traversal(ni + node.right_offset, bbhits[2]);
       }
 
     }

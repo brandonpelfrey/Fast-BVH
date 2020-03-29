@@ -53,10 +53,10 @@ int main() {
 
 In order to glue this scene to a format that Fast-BVH can use, we'll need to
 define a class that converts our spheres to bounding boxes. We'll call this
-class `SphereBoxConverter`.
+class `SphereBoxConverter`. Note that we also include the `FastBVH.h` header.
 
 ```cxx
-#include <FastBVH/BBox.h>
+#include <FastBVH.h>
 
 class SphereBoxConverter final {
 public:
@@ -94,10 +94,13 @@ Now we're ready to create our first BVH.
 
 ### Building a BVH
 
-Start by including the directory for the @ref FastBVH::BVH data structure.
+When constructing a BVH, there are many different algorithms that have their own trade offs
+between build time and quality of the BVH. In this library, we separate these algorithms into
+what are called "strategies." It's beyond the scope of this tutorial to go through the different
+algorithms, so we'll just be using the @ref DefaultBuilder type definition and stick with that.
 
 ```cxx
-#include <FastBVH/BVH.h>
+#include <FastBVH.h>
 
 /* SphereBoxConverter goes here */
 
@@ -105,11 +108,11 @@ int main() {
 
   /* Create spheres as above */
 
-  FastBVH::BVH<float, Sphere> bvh;
+  FastBVH::DefaultBuilder<float> builder;
 
-  SphereBoxConverter boxConverter;
+  SphereBoxConverter box_converter;
 
-  bvh.build(spheres, boxConverter);
+  auto bvh = builder(spheres, box_converter);
 
   /* We now have our first BVH! */
 

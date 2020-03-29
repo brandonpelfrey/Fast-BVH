@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.1.3)
 
 project(Fast_BVH LANGUAGES CXX)
 
+option(FASTBVH_BUILD_EXAMPLES "Whether or not to build the example programs." ON)
+option(FASTBVH_BUILD_TESTS    "Whether or not to build the unit tests." ON)
+
 set(CMAKE_CXX_STANDARD 14)
 
 set(gnu_cxxflags -Wall -Wextra -Werror -Wfatal-errors)
@@ -18,24 +21,11 @@ add_library(FastBVH INTERFACE)
 
 target_include_directories(FastBVH INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-function(add_example name)
+if(FASTBVH_BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif(FASTBVH_BUILD_EXAMPLES)
 
-  set(target FastBVH_Example_${name})
-
-  add_executable(${target} ${ARGN})
-
-  target_link_libraries(${target} PRIVATE FastBVH)
-
-  target_compile_options(${target} PRIVATE ${cxxflags})
-
-  set_target_properties(${target} PROPERTIES OUTPUT_NAME ${name})
-
-endfunction(add_example name)
-
-add_example(CubeOfSpheres
-  examples/CubeOfSpheres.cpp)
-
-add_example(ObjFile
-  examples/ObjFile.cpp
-  examples/tiny_obj_loader.h
-  examples/tiny_obj_loader.cc)
+if(FASTBVH_BUILD_TESTS)
+  add_subdirectory(tests)
+  enable_testing()
+endif(FASTBVH_BUILD_TESTS)

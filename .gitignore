@@ -5,3 +5,4 @@ render.ppm
 *.exe
 doxygen/html
 examples/CubeOfSpheres
+examples/ObjFile
