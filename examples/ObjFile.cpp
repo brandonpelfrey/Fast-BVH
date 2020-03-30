@@ -167,6 +167,9 @@ class FaceIntersector final {
     }
 
     auto t = dot(v0v2, qvec) * inv_det;
+    if (t < std::numeric_limits<float>::epsilon()) {
+      return FastBVH::Intersection<float, uint32_t>{};
+    }
 
     // At this point, we know we have a hit.
     // We just need to calculate the UV coordinates.
