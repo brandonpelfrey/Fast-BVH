@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.1.3)
 
 project(Fast_BVH LANGUAGES CXX)
 
+option(FASTBVH_BUILD_BENCHMARK "Whether or not to build the benchmark program." ON)
 option(FASTBVH_BUILD_EXAMPLES "Whether or not to build the example programs." ON)
 option(FASTBVH_BUILD_TESTS    "Whether or not to build the unit tests." ON)
 
@@ -20,6 +21,10 @@ endif((CMAKE_CXX_COMPILER_ID STREQUAL GNU) OR (CMAKE_CXX_COMPILER_ID MATCHES Cla
 add_library(FastBVH INTERFACE)
 
 target_include_directories(FastBVH INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+if(FASTBVH_BUILD_BENCHMARK)
+  add_subdirectory(benchmark)
+endif(FASTBVH_BUILD_BENCHMARK)
 
 if(FASTBVH_BUILD_EXAMPLES)
   add_subdirectory(examples)
