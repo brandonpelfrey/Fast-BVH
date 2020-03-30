@@ -6,18 +6,25 @@ CXXFLAGS := $(CXXFLAGS) -std=c++14
 
 VPATH += include/fast_bvh
 
-headers := include/FastBVH/BBox.h \
+headers := include/FastBVH.h \
+           include/FastBVH/BBox.h \
+           include/FastBVH/BuildStrategy1.h \
+           include/FastBVH/BuildStrategy.h \
            include/FastBVH/BVH.h \
+           include/FastBVH/Config.h \
            include/FastBVH/Intersection.h \
+           include/FastBVH/Iterable.h \
            include/FastBVH/Ray.h \
            include/FastBVH/Traverser.h \
            include/FastBVH/Vector3.h
 
 example_headers := examples/Log.h \
+                   examples/SimpleScheduler.h \
                    examples/Stopwatch.h \
                    examples/tiny_obj_loader.h
 
-examples := examples/CubeOfSpheres examples/ObjFile
+examples := examples/CubeOfSpheres \
+            examples/ObjFile
 
 .PHONY: all
 all: simple-target

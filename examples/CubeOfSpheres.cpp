@@ -1,5 +1,4 @@
-#include <FastBVH/BVH.h>
-#include <FastBVH/Traverser.h>
+#include <FastBVH.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -25,6 +24,7 @@ Vector3<float> randVector3() { return Vector3<float>{rand01(), rand01(), rand01(
 template <typename Float>
 struct Sphere final {
   Vector3<Float> center;  // Center of the sphere
+
   Float r, r2;            // Radius, Radius^2
 
   constexpr Sphere(const Vector3<Float>& center, Float radius) noexcept
@@ -98,19 +98,19 @@ int main() {
     objects.emplace_back(Sphere<float>(randVector3(), .005f));
   }
 
-  SphereBoxConverter<float> boxConverter;
+  SphereBoxConverter<float> box_converter;
 
   Stopwatch stopwatch;
 
-  // Compute a BVH for this object set
-  BVH<float, Sphere<float>> bvh;
-  bvh.build(std::move(objects), boxConverter);
+  FastBVH::BuildStrategy<float, 1> build_strategy;
+
+  auto bvh = build_strategy(objects, box_converter);
 
   // Output tree build time and statistics
   double constructionTime = stopwatch.read();
 
-  LOG_STAT("Built BVH (%u nodes, with %u leafs) in %.02f ms", (unsigned int)bvh.getNodeCount(),
-           (unsigned int)bvh.getLeafCount(), 1000.0 * constructionTime);
+  LOG_STAT("Built BVH (%u nodes, with %u leafs) in %.02f ms", (unsigned int)bvh.getNodes().size(),
+           (unsigned int)bvh.countLeafs(), 1000.0 * constructionTime);
 
   SphereIntersector<float> intersector;
   Traverser<float, Sphere<float>, decltype(intersector)> traverser(bvh, intersector);

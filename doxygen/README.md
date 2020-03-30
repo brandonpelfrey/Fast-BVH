@@ -7,6 +7,7 @@ as well as some tutorials to help you get started.
 
 If you're here for reference material, you can go ahead and checkout the two main classes:
 
+ - @ref FastBVH::BuildStrategy
  - @ref FastBVH::BVH
  - @ref FastBVH::Traverser
 

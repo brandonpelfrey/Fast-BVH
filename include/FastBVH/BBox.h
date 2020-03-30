@@ -3,9 +3,8 @@
 #include <FastBVH/Ray.h>
 #include <FastBVH/Vector3.h>
 
-#include <utility>
-
 #include <cstdint>
+#include <utility>
 
 namespace FastBVH {
 
@@ -17,7 +16,6 @@ namespace FastBVH {
 //! by the minimum and maximum point components.
 template <typename Float>
 struct BBox final {
-
   //! A simple type definition for a 3D vector.
   using Vec3 = Vector3<Float>;
 
@@ -32,12 +30,11 @@ struct BBox final {
   Vec3 extent;
 
   //! Constructs an uninitialized bounding box.
-  constexpr BBox() noexcept { }
+  constexpr BBox() noexcept {}
 
   //! Constructs a bounding box with
   //! a specified minimum and maximum.
-  constexpr BBox(const Vec3& min, const Vec3& max) noexcept
-    : min(min), max(max), extent(max - min) {}
+  constexpr BBox(const Vec3& min, const Vec3& max) noexcept : min(min), max(max), extent(max - min) {}
 
   //! Constructs a bounding box around
   //! a single point. The volume occupied
@@ -63,16 +60,14 @@ struct BBox final {
 
   //! Gets the center of the bounding box.
   //! \return The center of the bounding box.
-  Vec3 getCenter() const noexcept {
-    return (max + min) * Float(0.5);
-  }
+  Vec3 getCenter() const noexcept { return (max + min) * Float(0.5); }
 
   //! Checks for intersection between a ray and the box.
   //! \param ray The ray being traced.
   //! \param tnear The scale to the nearest box hit.
   //! \param tfar The scale to the farthest box hit.
   //! \return True if the ray hits the box, false otherwise.
-  bool intersect(const Ray<Float>& ray, Float *tnear, Float *tfar) const noexcept;
+  bool intersect(const Ray<Float>& ray, Float* tnear, Float* tfar) const noexcept;
 
   //! Determines the index of the dimension
   //! that has the largest space between the
@@ -93,8 +88,7 @@ struct BBox final {
 };
 
 template <typename Float>
-bool BBox<Float>::intersect(const Ray<Float>& ray, Float *tnear, Float *tfar) const noexcept {
-
+bool BBox<Float>::intersect(const Ray<Float>& ray, Float* tnear, Float* tfar) const noexcept {
   Float tmin = (min.x - ray.o.x) * ray.inv_d.x;
   Float tmax = (max.x - ray.o.x) * ray.inv_d.x;
 
@@ -141,13 +135,11 @@ uint32_t BBox<Float>::maxDimension() const noexcept {
   // Assume X axis is longest first
   uint32_t result = 0;
 
-  if(extent[1] > extent[result])
-    result = 1;
+  if (extent[1] > extent[result]) result = 1;
 
-  if(extent[2] > extent[result])
-    result = 2;
+  if (extent[2] > extent[result]) result = 2;
 
   return result;
 }
 
-} // namespace FastBVH
+}  // namespace FastBVH

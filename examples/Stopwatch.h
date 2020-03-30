@@ -21,21 +21,15 @@ class Stopwatch final {
 
   //! Gets the current time.
   //! \return The current time.
-  static TimePoint now() noexcept {
-    return Clock::now();
-  }
-  
-public:
+  static TimePoint now() noexcept { return Clock::now(); }
+
+ public:
   //! Constructs a new instance of the stopwatch.
-  Stopwatch() noexcept {
-    reset();
-  }
+  Stopwatch() noexcept { reset(); }
 
   //! Resets the stop watch to a new starting time.
   //! This should be called right before the profiling begins.
-  void reset() noexcept {
-    start = now();
-  }
+  void reset() noexcept { start = now(); }
 
   //! Reads the current time value from the stopwatch.
   //! \return The number of ellapsed seconds since either
@@ -46,4 +40,4 @@ public:
   }
 };
 
-} // namespace FastBVH
+}  // namespace FastBVH
