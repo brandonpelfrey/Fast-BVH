@@ -4,6 +4,7 @@ project(Fast_BVH LANGUAGES CXX)
 
 option(FASTBVH_BUILD_EXAMPLES "Whether or not to build the example programs." ON)
 option(FASTBVH_BUILD_TESTS    "Whether or not to build the unit tests." ON)
+option(FASTBVH_BUILD_BENCHMARK "Whether or not to build the benchmark." OFF)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -29,3 +30,7 @@ if(FASTBVH_BUILD_TESTS)
   add_subdirectory(tests)
   enable_testing()
 endif(FASTBVH_BUILD_TESTS)
+
+if(FASTBVH_BUILD_BENCHMARK)
+  add_subdirectory(benchmark)
+endif(FASTBVH_BUILD_BENCHMARK)
