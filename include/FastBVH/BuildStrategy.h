@@ -1,7 +1,7 @@
 #pragma once
 
-#include <FastBVH/Config.h>
 #include <FastBVH/BVH.h>
+#include <FastBVH/Config.h>
 
 #ifdef FASTBVH_NO_STL
 #include <vector>
@@ -25,26 +25,19 @@ namespace FastBVH {
 //! Variant zero is the default build strategy.
 template <typename Float, int variant>
 class BuildStrategy final {
-public:
+ public:
   //! Builds an extremely primitive BVH.
   //! \tparam Primitive The type of primitive the BVH is being built for.
   //! \tparam BoxConverter The type of the primitive-to-box converter.
   //! \param primitives The array of primitives to build the BVH for.
   //! \param converter The primitive-to-box converter instance.
   template <typename Primitive, typename BoxConverter>
-  auto operator () (Iterable<Primitive> primitives, BoxConverter converter) {
+  auto operator()(Iterable<Primitive> primitives, BoxConverter converter) {
+    Vector3<Float> init_min{std::numeric_limits<Float>::infinity(), std::numeric_limits<Float>::infinity(),
+                            std::numeric_limits<Float>::infinity()};
 
-    Vector3<Float> init_min {
-      std::numeric_limits<Float>::infinity(),
-      std::numeric_limits<Float>::infinity(),
-      std::numeric_limits<Float>::infinity()
-    };
-
-    Vector3<Float> init_max {
-      -std::numeric_limits<Float>::infinity(),
-      -std::numeric_limits<Float>::infinity(),
-      -std::numeric_limits<Float>::infinity()
-    };
+    Vector3<Float> init_max{-std::numeric_limits<Float>::infinity(), -std::numeric_limits<Float>::infinity(),
+                            -std::numeric_limits<Float>::infinity()};
 
     BBox<Float> bbox(init_min, init_max);
 
@@ -52,11 +45,9 @@ public:
       bbox.expandToInclude(converter(p));
     }
 
-    Node<Float> root_node {
-      bbox,
-      0 /* primitives start index */,
-      (uint32_t) primitives.size(),
-      0 /* right offset (0 indicates no sub-nodes) */
+    Node<Float> root_node{
+        bbox, 0 /* primitives start index */, (uint32_t)primitives.size(),
+        0 /* right offset (0 indicates no sub-nodes) */
     };
 
     NodeArray<Float> nodes;
@@ -65,12 +56,12 @@ public:
 
     return BVH<Float, Primitive>(std::move(nodes), primitives);
   }
+
 #ifndef FASTBVH_NO_STL
   //! This is a function that takes a STL vector of primitives,
   //! instead of the @ref Iterable container.
   template <typename Primitive, typename BoxConverter>
-  BVH<Float, Primitive> operator () (std::vector<Primitive>& primitives, BoxConverter converter) {
-
+  BVH<Float, Primitive> operator()(std::vector<Primitive>& primitives, BoxConverter converter) {
     Iterable<Primitive> iterable(primitives.data(), primitives.size());
 
     return (*this)(iterable, converter);
@@ -82,16 +73,16 @@ public:
 //! It is a single threaded BVH builder.
 template <typename Float>
 class BuildStrategy<Float, 1> final {
-public:
+ public:
   //! Builds a BVH using the original algorithm.
   template <typename Primitive, typename BoxConverter>
-  BVH<Float, Primitive> operator () (Iterable<Primitive> primitives, BoxConverter converter);
+  BVH<Float, Primitive> operator()(Iterable<Primitive> primitives, BoxConverter converter);
+
 #ifndef FASTBVH_NO_STL
   //! This is a function that takes a STL vector of primitives,
   //! instead of the @ref Iterable container.
   template <typename Primitive, typename BoxConverter>
-  BVH<Float, Primitive> operator () (std::vector<Primitive>& primitives, BoxConverter converter) {
-
+  BVH<Float, Primitive> operator()(std::vector<Primitive>& primitives, BoxConverter converter) {
     Iterable<Primitive> iterable(primitives.data(), primitives.size());
 
     return (*this)(iterable, converter);
@@ -104,4 +95,4 @@ public:
 template <typename Float>
 using DefaultBuilder = BuildStrategy<Float, 1>;
 
-} // namespace FastBVH
+}  // namespace FastBVH

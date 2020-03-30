@@ -1,0 +1,9 @@
+﻿---
+BasedOnStyle: Google
+AllowShortFunctionsOnASingleLine: All
+ColumnLimit: 120
+IndentWidth: '2'
+Language: Cpp
+UseTab: Never
+
+...

@@ -1,10 +1,9 @@
 #include <FastBVH.h>
-
-#include "Primitive.h"
-
 #include <gtest/gtest.h>
 
 #include <list>
+
+#include "Primitive.h"
 
 using namespace FastBVH;
 
@@ -14,7 +13,7 @@ namespace {
 //! to be able to run template tests.
 template <typename T>
 class BuildStrategyTest : public ::testing::Test {
-public:
+ public:
   using List = std::list<T>;
   static T shared_;
   T value_;
@@ -23,17 +22,12 @@ public:
 //! \brief The floating point types to be tested.
 using FloatTypes = ::testing::Types<float, double, long double>;
 
-} // namespace
+}  // namespace
 
 TYPED_TEST_CASE(BuildStrategyTest, FloatTypes);
 
 TYPED_TEST(BuildStrategyTest, build) {
-
-  Testing::Primitive<TypeParam> p[3] = {
-    { { 1, 2, 3 }, {  4,  5,  8 } },
-    { { 9, 8, 4 }, { 11, 15,  9 } },
-    { { 2, 6, 5 }, {  3,  7,  6 } }
-  };
+  Testing::Primitive<TypeParam> p[3] = {{{1, 2, 3}, {4, 5, 8}}, {{9, 8, 4}, {11, 15, 9}}, {{2, 6, 5}, {3, 7, 6}}};
 
   std::vector<Testing::Primitive<TypeParam>> primitives;
   primitives.emplace_back(p[0]);
@@ -58,5 +52,5 @@ TYPED_TEST(BuildStrategyTest, build) {
   EXPECT_NEAR(nodes[0].bbox.min.z, 3, cmp_bias);
   EXPECT_NEAR(nodes[0].bbox.max.x, 11, cmp_bias);
   EXPECT_NEAR(nodes[0].bbox.max.y, 15, cmp_bias);
-  EXPECT_NEAR(nodes[0].bbox.max.z,  9, cmp_bias);
+  EXPECT_NEAR(nodes[0].bbox.max.z, 9, cmp_bias);
 }
