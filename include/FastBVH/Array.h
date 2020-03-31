@@ -23,8 +23,7 @@ class Array final {
   //! \param The number of elements in the array.
   Size count;
 
-public:
-
+ public:
   //! Constructs an empty array.
   constexpr Array() noexcept : elements(nullptr), count(0) {}
 
@@ -45,47 +44,35 @@ public:
   }
 
   //! Releases the memory allocated by the array.
-  ~Array() {
-    freeArray<T>(elements, count);
-  }
+  ~Array() { freeArray<T>(elements, count); }
 
   //! Accesses an iterable container of the elements.
   //! \return An iterable container of the elements.
-  Iterable<T> getElements() noexcept {
-    return Iterable<T>(elements, count);
-  }
+  Iterable<T> getElements() noexcept { return Iterable<T>(elements, count); }
 
   //! Accesses an iterable read-only container of the elements.
   //! \return An iterable read-only container of the elements.
-  ConstIterable<T> getElements() const noexcept {
-    return Iterable<T>(elements, count);
-  }
+  ConstIterable<T> getElements() const noexcept { return Iterable<T>(elements, count); }
 
   //! Indicates the number of elements in the array.
   //! \return The number of elements in the array.
-  constexpr inline auto size() const noexcept {
-    return count;
-  }
+  constexpr inline auto size() const noexcept { return count; }
 
   //! Accesses an element at a specific index.
   //! Does not perform bounds checking.
   //! \param index The index of the element to get.
   //! \return A const reference to the specified element.
-  inline constexpr const T& operator [] (Size index) const noexcept {
-    return elements[index];
-  }
+  inline constexpr const T& operator[](Size index) const noexcept { return elements[index]; }
 
   //! Accesses an element at a specific index.
   //! Does not perform bounds checking.
   //! \param index The index of the element to get.
   //! \return A reference to the specified element.
-  inline T& operator [] (Size index) noexcept {
-    return elements[index];
-  }
+  inline T& operator[](Size index) noexcept { return elements[index]; }
 
   Array(const Array& other) = delete;
-  Array& operator = (const Array&) = delete;
-  Array& operator = (Array&&) = delete;
+  Array& operator=(const Array&) = delete;
+  Array& operator=(Array&&) = delete;
 };
 
-} // namespace FastBVH
+}  // namespace FastBVH

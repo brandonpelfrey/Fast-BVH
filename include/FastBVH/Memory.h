@@ -42,7 +42,7 @@ inline void freeDeviceMemory(void* ptr) {
 //! \return A pointer to the allocated memory.
 template <typename T>
 T* allocateArray(Size element_count) {
-  return (T*) allocateDeviceMemory(element_count * sizeof(T));
+  return (T*)allocateDeviceMemory(element_count * sizeof(T));
 }
 
 //! Releases memory allocated by @ref allocateArray.
@@ -53,4 +53,4 @@ void freeArray(T* elements, Size) {
   freeDeviceMemory(elements);
 }
 
-} // namespace FastBVH 
+}  // namespace FastBVH

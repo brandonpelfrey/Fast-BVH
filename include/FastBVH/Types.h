@@ -46,13 +46,13 @@ inline constexpr U128 literal128U(U64 high, U64 low) noexcept {
   return static_cast<U128>(high) << 64 | static_cast<U128>(low);
 }
 
-#endif // FASTBVH_NO_INT128
+#endif  // FASTBVH_NO_INT128
 
 //! \brief This class is used to map a floating point type
 //! to an index type that is equal in size. This is to encourage
 //! integer SIMD types to go along with their floating point equalivalents.
 template <Size float_size>
-struct AssociatedIndexType final { };
+struct AssociatedIndexType final {};
 
 //! A specialization to map index types for 32-bit floats.
 template <>
@@ -79,6 +79,6 @@ struct AssociatedIndexType<16> final {
   using Type = U128;
 };
 
-#endif // FASTBVH_NO_INT128
+#endif  // FASTBVH_NO_INT128
 
-} // namespace FastBVH
+}  // namespace FastBVH

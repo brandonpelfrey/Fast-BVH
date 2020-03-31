@@ -76,9 +76,7 @@ BVH<Float, Primitive> BuildStrategy<Float, 1>::operator()(Iterable<Primitive> pr
 
   // Push the root
   BuildEntry root{
-      0xfffffffc /* parent */,
-      0 /* start */,
-      (uint32_t)primitives.size() /* end */
+      0xfffffffc /* parent */, 0 /* start */, (uint32_t)primitives.size() /* end */
   };
 
   todo.push(root);
