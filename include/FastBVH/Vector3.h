@@ -19,6 +19,9 @@ struct alignas(sizeof(float) * 4) Vector3 final {
   //! The Z component of the vector.
   Float z;
 
+  //! Adds a scalar value to the vector.
+  Vector3 operator+(Float n) const noexcept { return Vector3{x + n, y + n, z + n}; }
+
   //! Adds two vectors.
   Vector3 operator+(const Vector3& b) const noexcept { return Vector3{x + b.x, y + b.y, z + b.z}; }
 

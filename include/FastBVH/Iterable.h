@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstddef>
+#include <FastBVH/Types.h>
 
 namespace FastBVH {
 
@@ -12,13 +12,13 @@ class Iterable final {
   T* array;
 
   //! The number of elements in the container.
-  std::size_t count;
+  Size count;
 
  public:
   //! Constructs a new iterable instance.
   //! \param a The array to iterate.
   //! \param c The number of elements in the array.
-  constexpr Iterable(T* a, std::size_t c) noexcept : array(a), count(c) {}
+  constexpr Iterable(T* a, Size c) noexcept : array(a), count(c) {}
 
   //! Accesses the beginning pointer.
   //! This is useful in range-based for loops.
@@ -37,7 +37,7 @@ class Iterable final {
   inline auto end() const noexcept { return array + count; }
 
   //! Accesses an element at a specific index.
-  auto& operator[](std::size_t i) noexcept { return array[i]; }
+  auto& operator[](Size i) noexcept { return array[i]; }
 
   //! Indicates the number of elements in the container.
   auto size() const noexcept { return count; }
@@ -51,13 +51,13 @@ class ConstIterable final {
   const T* array;
 
   //! The number of elements in the array.
-  std::size_t count;
+  Size count;
 
  public:
   //! Constructs a new iterable instance.
   //! \param a The array to iterate.
   //! \param c The number of elements in the array.
-  constexpr ConstIterable(const T* a, std::size_t c) noexcept : array(a), count(c) {}
+  constexpr ConstIterable(const T* a, Size c) noexcept : array(a), count(c) {}
 
   //! Constructs a read-only iterable from a read-write iterable.
   //! \param other The read-write iterable to get the data from.
@@ -72,7 +72,7 @@ class ConstIterable final {
   inline auto end() const noexcept { return array + count; }
 
   //! Accesses an element at a specific index.
-  const auto& operator[](std::size_t i) const noexcept { return array[i]; }
+  const auto& operator[](Size i) const noexcept { return array[i]; }
 
   //! Indicates the number of elements in the container.
   auto size() const noexcept { return count; }

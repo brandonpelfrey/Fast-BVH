@@ -7,7 +7,9 @@ if(NOT GTest_FOUND)
 endif(NOT GTest_FOUND)
 
 add_executable(FastBVH_UnitTests
-  BuildStrategy.cxx)
+  BuildStrategy.cxx
+  MortonCurveTest.cxx
+  MortonEncoderTest.cxx)
 
 target_link_libraries(FastBVH_UnitTests PRIVATE FastBVH GTest::GTest GTest::Main)
 

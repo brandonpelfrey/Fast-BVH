@@ -14,3 +14,14 @@
 #define FASTBVH_NO_STL
 #endif
 #endif  // FASTBVH_NO_STL
+
+#ifndef __SIZEOF_INT128__
+
+//! \brief This macro indicates that
+//! GCC's __int128 is not available.
+//! This is important when deciding
+//! how to handle 128-bit floats in
+//! some scenarios.
+#define FASTBVH_NO_INT128
+
+#endif

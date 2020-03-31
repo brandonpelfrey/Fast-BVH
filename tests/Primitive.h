@@ -1,6 +1,6 @@
 #pragma once
 
-#include <FastBVH/Vector3.h>
+#include <FastBVH/BBox.h>
 
 #include <random>
 
