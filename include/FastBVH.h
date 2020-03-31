@@ -2,8 +2,6 @@
 #include <FastBVH/BBox.h>
 #include <FastBVH/BVH.h>
 #include <FastBVH/BuildStrategy.h>
-#include <FastBVH/BuildStrategy1.h>
-#include <FastBVH/Config.h>
 #include <FastBVH/Intersection.h>
 #include <FastBVH/Iterable.h>
 #include <FastBVH/Ray.h>

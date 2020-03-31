@@ -9,7 +9,7 @@ namespace FastBVH {
 //! as well as the representation of rays and intersections.
 //! \tparam Float The type used for the vector components.
 template <typename Float>
-struct alignas(sizeof(float) * 4) Vector3 final {
+struct alignas(sizeof(Float) * 4) Vector3 final {
   //! The X component of the vector.
   Float x;
 
@@ -18,6 +18,9 @@ struct alignas(sizeof(float) * 4) Vector3 final {
 
   //! The Z component of the vector.
   Float z;
+
+  //! Adds a scalar value to the vector.
+  Vector3 operator+(Float n) const noexcept { return Vector3{x + n, y + n, z + n}; }
 
   //! Adds two vectors.
   Vector3 operator+(const Vector3& b) const noexcept { return Vector3{x + b.x, y + b.y, z + b.z}; }
@@ -62,6 +65,11 @@ Vector3<Float> cross(const Vector3<Float>& a, const Vector3<Float>& b) noexcept 
 template <typename Float>
 Float dot(const Vector3<Float>& a, const Vector3<Float>& b) noexcept {
   return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+}
+
+template <typename Float>
+Vector3<Float> hadamard(const Vector3<Float>& a, const Vector3<Float>& b) noexcept {
+  return a.cmul(b);
 }
 
 //! Calculates all minimum values between two vectors.

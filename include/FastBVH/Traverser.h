@@ -108,14 +108,14 @@ Intersection<Float, Primitive> Traverser<Float, Primitive, Intersector, Flags>::
 
     } else {  // Not a leaf
 
-      bool hitc0 = nodes[ni + 1].bbox.intersect(ray, bbhits, bbhits + 1);
-      bool hitc1 = nodes[ni + node.right_offset].bbox.intersect(ray, bbhits + 2, bbhits + 3);
+      bool hitc0 = nodes[node.lower_node].bbox.intersect(ray, bbhits, bbhits + 1);
+      bool hitc1 = nodes[node.upper_node].bbox.intersect(ray, bbhits + 2, bbhits + 3);
 
       // Did we hit both nodes?
       if (hitc0 && hitc1) {
         // We assume that the left child is a closer hit...
-        closer = ni + 1;
-        other = ni + node.right_offset;
+        closer = node.lower_node;
+        other = node.upper_node;
 
         // ... If the right child was actually closer, swap the relavent values.
         if (bbhits[2] < bbhits[0]) {
@@ -135,11 +135,11 @@ Intersection<Float, Primitive> Traverser<Float, Primitive, Intersector, Flags>::
       }
 
       else if (hitc0) {
-        todo[++stackptr] = Traversal(ni + 1, bbhits[0]);
+        todo[++stackptr] = Traversal(node.lower_node, bbhits[0]);
       }
 
       else if (hitc1) {
-        todo[++stackptr] = Traversal(ni + node.right_offset, bbhits[2]);
+        todo[++stackptr] = Traversal(node.upper_node, bbhits[2]);
       }
     }
   }

@@ -1,11 +1,10 @@
 #pragma once
 
 #include <FastBVH/BVH.h>
-#include <FastBVH/Config.h>
 
-#ifdef FASTBVH_NO_STL
+#include <FastBVH/impl/Config.h>
+
 #include <vector>
-#endif
 
 namespace FastBVH {
 
@@ -46,8 +45,11 @@ class BuildStrategy final {
     }
 
     Node<Float> root_node{
-        bbox, 0 /* primitives start index */, (uint32_t)primitives.size(),
-        0 /* right offset (0 indicates no sub-nodes) */
+        bbox,
+        0 /* primitives start index */,
+        (uint32_t)primitives.size(),
+        0 /* lower sub node */,
+        0 /* upper sub node */,
     };
 
     NodeArray<Float> nodes;
@@ -78,7 +80,6 @@ class BuildStrategy<Float, 1> final {
   template <typename Primitive, typename BoxConverter>
   BVH<Float, Primitive> operator()(Iterable<Primitive> primitives, BoxConverter converter);
 
-#ifndef FASTBVH_NO_STL
   //! This is a function that takes a STL vector of primitives,
   //! instead of the @ref Iterable container.
   template <typename Primitive, typename BoxConverter>
@@ -87,7 +88,24 @@ class BuildStrategy<Float, 1> final {
 
     return (*this)(iterable, converter);
   }
-#endif
+};
+
+//! This is the second variant build strategy.
+//! It is a single threaded LBVH builder.
+template <typename Float>
+class BuildStrategy<Float, 2> final {
+ public:
+  //! Builds a BVH using the original algorithm.
+  template <typename Primitive, typename BoxConverter>
+  BVH<Float, Primitive> operator()(Iterable<Primitive> primitives, BoxConverter converter);
+
+  //! This is a function that takes a STL vector of primitives,
+  //! instead of the @ref Iterable container.
+  template <typename Primitive, typename BoxConverter>
+  BVH<Float, Primitive> operator()(std::vector<Primitive>& primitives, BoxConverter converter) {
+    Iterable<Primitive> iterable(primitives.data(), primitives.size());
+    return (*this)(iterable, converter);
+  }
 };
 
 //! This is the type definition for the default build strategy.
@@ -95,4 +113,12 @@ class BuildStrategy<Float, 1> final {
 template <typename Float>
 using DefaultBuilder = BuildStrategy<Float, 1>;
 
+//! A type definition for the LBVH builder.
+//! \tparam Float The floating point type of the builder and BVH.
+template <typename Float>
+using LBVHBuilder = BuildStrategy<Float, 2>;
+
 }  // namespace FastBVH
+
+#include <FastBVH/impl/BuildStrategy1.inl>
+#include <FastBVH/impl/BuildStrategy2.inl>

@@ -4,6 +4,8 @@
 #include <FastBVH/Vector3.h>
 
 #include <cstdint>
+
+#include <limits>
 #include <utility>
 
 namespace FastBVH {
@@ -29,18 +31,31 @@ struct BBox final {
   //! points of the bounding box.
   Vec3 extent;
 
+  //! Gets a bounding box with an
+  //! infinity min and a negative infinity max.
+  static constexpr BBox inf() noexcept {
+
+    constexpr auto inf = std::numeric_limits<Float>::infinity();
+
+    constexpr Vec3 min { inf, inf, inf };
+
+    constexpr Vec3 max { -inf, -inf, -inf };
+
+    return BBox(min, max);
+  }
+
   //! Constructs an uninitialized bounding box.
   constexpr BBox() noexcept {}
 
   //! Constructs a bounding box with
   //! a specified minimum and maximum.
-  constexpr BBox(const Vec3& min, const Vec3& max) noexcept : min(min), max(max), extent(max - min) {}
+  inline constexpr BBox(const Vec3& min, const Vec3& max) noexcept : min(min), max(max), extent(max - min) {}
 
   //! Constructs a bounding box around
   //! a single point. The volume occupied
   //! by the box after using this construction
   //! will always be zero.
-  constexpr BBox(const Vec3& p) noexcept : BBox(p, p) {}
+  inline constexpr BBox(const Vec3& p) noexcept : BBox(p, p) {}
 
   //! Expands the volume of the bounding box to fit a new point.
   //! \param p The point to expand the volume for.
@@ -60,7 +75,7 @@ struct BBox final {
 
   //! Gets the center of the bounding box.
   //! \return The center of the bounding box.
-  Vec3 getCenter() const noexcept { return (max + min) * Float(0.5); }
+  inline constexpr Vec3 getCenter() const noexcept { return (max + min) * Float(0.5); }
 
   //! Checks for intersection between a ray and the box.
   //! \param ray The ray being traced.

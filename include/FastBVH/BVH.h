@@ -27,13 +27,15 @@ struct Node final {
   //! The number of primitives in this node.
   uint32_t primitive_count;
 
-  //! Number of elements to skip in flattened tree to get to a left child's sibling.
-  //! (Node+1 == Node's left child , Node + rightOffset == Node's right child)
-  uint32_t right_offset;
+  //! The index to the lower node.
+  uint32_t lower_node;
+
+  //! The index to the upper node.
+  uint32_t upper_node;
 
   //! Indicates if this node is a leaf node.
   //! \return True if this node is a leaf node, false otherwise.
-  inline constexpr bool isLeaf() const noexcept { return right_offset == 0; }
+  inline constexpr bool isLeaf() const noexcept { return !(lower_node || upper_node); }
 };
 
 //! \brief This is a type definition for a node array.

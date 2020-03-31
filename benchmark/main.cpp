@@ -17,7 +17,7 @@
 
 namespace FastBVH {
 
-namespace Benchmark {
+namespace benchmark {
 
 namespace {
 
@@ -108,7 +108,7 @@ StrategyResults bench(const std::vector<Face>& faces, const tinyobj::attrib_t& a
     0, 0, 0
   };
 
-  FastBVH::Benchmark::Scheduler<float> scheduler(2000, 2000);
+  FastBVH::benchmark::Scheduler<float> scheduler(2000, 2000);
   scheduler.moveCamera(cam_pos);
   scheduler.lookAt(cam_look_at);
 
@@ -136,7 +136,7 @@ StrategyResults bench(const std::vector<Face>& faces, const tinyobj::attrib_t& a
 
 }  // namespace
 
-} // namespace Benchmark
+} // namespace benchmark
 
 } // namespace FastBVH
 
@@ -155,19 +155,22 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  auto faces = FastBVH::Benchmark::combineFaces(reader.GetShapes());
+  auto faces = FastBVH::benchmark::combineFaces(reader.GetShapes());
 
-  std::vector<FastBVH::Benchmark::StrategyResults> results;
+  std::vector<FastBVH::benchmark::StrategyResults> results;
 
   // Uncomment this if you'd like to either:
   //   - Generate a 'known good' image
   //   - Wait a really long time
   //
   //std::printf("Running benchmark for strategy 0\n");
-  //results.emplace_back(FastBVH::Benchmark::bench<0>(faces, reader.GetAttrib()));
+  //results.emplace_back(FastBVH::benchmark::bench<0>(faces, reader.GetAttrib()));
 
   std::printf("Running benchmark for strategy 1\n");
-  results.emplace_back(FastBVH::Benchmark::bench<1>(faces, reader.GetAttrib()));
+  results.emplace_back(FastBVH::benchmark::bench<1>(faces, reader.GetAttrib()));
+
+  std::printf("Running benchmark for strategy 2\n");
+  results.emplace_back(FastBVH::benchmark::bench<2>(faces, reader.GetAttrib()));
 
   std::printf("Results:\n");
   std::printf("              | Build Time (sec) | Render Time (sec) |\n");

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <FastBVH/BuildStrategy.h>
 
 namespace FastBVH {
@@ -58,6 +60,25 @@ class BuildStack final {
   const auto& operator[](std::size_t index) const noexcept { return entries[index]; }
 };
 
+//! \brief Node descriptor for the flattened tree
+//! \tparam Float The floating point type
+//! used for the bounding box vectors.
+template <typename Float>
+struct LegacyNode final {
+  //! The bounding box of the node.
+  BBox<Float> bbox;
+
+  //! The index of the first primitive.
+  uint32_t start;
+
+  //! The number of primitives in this node.
+  uint32_t primitive_count;
+
+  //! Number of elements to skip in flattened tree to get to a left child's sibling.
+  //! (Node+1 == Node's left child , Node + rightOffset == Node's right child)
+  uint32_t right_offset;
+};
+
 }  // namespace Strategy1
 
 template <typename Float>
@@ -76,15 +97,13 @@ BVH<Float, Primitive> BuildStrategy<Float, 1>::operator()(Iterable<Primitive> pr
 
   // Push the root
   BuildEntry root{
-      0xfffffffc /* parent */,
-      0 /* start */,
-      (uint32_t)primitives.size() /* end */
+      0xfffffffc /* parent */, 0 /* start */, (uint32_t)primitives.size() /* end */
   };
 
   todo.push(root);
 
-  Node<Float> node;
-  std::vector<Node<Float>> build_nodes;
+  LegacyNode<Float> node;
+  std::vector<LegacyNode<Float>> build_nodes;
   build_nodes.reserve(primitives.size() * 2);
 
   while (todo.size() > 0) {
@@ -163,12 +182,24 @@ BVH<Float, Primitive> BuildStrategy<Float, 1>::operator()(Iterable<Primitive> pr
     todo.push(left_child);
   }
 
-  NodeArray<Float> nodes;
-
-  nodes.resize(node_count);
+  NodeArray<Float> nodes(node_count);
 
   for (uint32_t n = 0; n < node_count; n++) {
-    nodes[n] = build_nodes[n];
+
+    auto& dst = nodes[n];
+    auto& src = build_nodes[n];
+
+    dst.bbox = src.bbox;
+    dst.start = src.start;
+    dst.primitive_count = src.primitive_count;
+
+    if (src.right_offset) {
+      dst.lower_node = n + 1;
+      dst.upper_node = n + src.right_offset;
+    } else {
+      dst.lower_node = 0;
+      dst.upper_node = 0;
+    }
   }
 
   return BVH<Float, Primitive>(std::move(nodes), primitives);
