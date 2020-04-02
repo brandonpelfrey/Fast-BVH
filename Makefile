@@ -11,7 +11,7 @@ headers := include/FastBVH.h \
            include/FastBVH/BuildStrategy1.h \
            include/FastBVH/BuildStrategy.h \
            include/FastBVH/BVH.h \
-           include/FastBVH/Config.h \
+           include/FastBVH/impl/Config.h \
            include/FastBVH/Intersection.h \
            include/FastBVH/Iterable.h \
            include/FastBVH/Ray.h \
