@@ -1,6 +1,6 @@
 #pragma once
 
-#include <FastBVH/Types.h>
+#include <FastBVH/impl/Types.h>
 
 namespace FastBVH {
 

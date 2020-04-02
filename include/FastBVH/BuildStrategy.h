@@ -1,7 +1,8 @@
 #pragma once
 
 #include <FastBVH/BVH.h>
-#include <FastBVH/Config.h>
+
+#include <FastBVH/impl/Config.h>
 
 #ifdef FASTBVH_NO_STL
 #include <vector>

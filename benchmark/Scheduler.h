@@ -6,7 +6,7 @@
 
 namespace FastBVH {
 
-namespace Benchmark {
+namespace benchmark {
 
 //! This is the scheduler used for benchmarking the ray traversal.
 //! \tparam Float The floating point type to generate rays with.
@@ -140,6 +140,6 @@ protected:
   }
 };
 
-} // namespace Benchmark
+} // namespace benchmark
 
 }  // namespace FastBVH

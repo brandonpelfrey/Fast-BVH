@@ -11,7 +11,7 @@
 
 namespace FastBVH {
 
-namespace Benchmark {
+namespace benchmark {
 
 //! \brief Checks for intersection between a ray and a face.
 //! Used by @ref FaceBVH::Traverse during BVH traversal.
@@ -116,6 +116,6 @@ class FaceIntersector final {
   }
 };
 
-} // namespace Benchmark
+} // namespace benchmark
 
 } // namespace FastBVH

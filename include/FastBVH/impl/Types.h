@@ -1,11 +1,9 @@
 #pragma once
 
-#include <FastBVH/Config.h>
+#include <FastBVH/impl/Config.h>
 
-#ifndef __NVCC__
 #include <cstddef>
 #include <cstdint>
-#endif
 
 namespace FastBVH {
 

@@ -9,7 +9,7 @@ namespace FastBVH {
 //! as well as the representation of rays and intersections.
 //! \tparam Float The type used for the vector components.
 template <typename Float>
-struct alignas(sizeof(float) * 4) Vector3 final {
+struct alignas(sizeof(Float) * 4) Vector3 final {
   //! The X component of the vector.
   Float x;
 

@@ -1,15 +1,14 @@
 #pragma once
 
 #include <FastBVH/Iterable.h>
-#include <FastBVH/Memory.h>
+
+#include <FastBVH/impl/Memory.h>
 
 namespace FastBVH {
 
-//! \brief This is a dynamically sized array class,
-//! suitable to work with either the standard C library
-//! or the CUDA runtime library. On CPU targets, the
-//! memory is allocated on the CPU memory. On GPU targets,
-//! the memory is allocated on the CPU.
+namespace impl {
+
+//! \brief This is a dynamically sized array class.
 //
 //! Currently, this is only suitable for POD types,
 //! or types that don't require deconstructors.
@@ -44,15 +43,19 @@ class Array final {
   }
 
   //! Releases the memory allocated by the array.
-  ~Array() { freeArray<T>(elements, count); }
+  ~Array() {freeArray<T>(elements, count); }
 
   //! Accesses an iterable container of the elements.
   //! \return An iterable container of the elements.
-  Iterable<T> getElements() noexcept { return Iterable<T>(elements, count); }
+  Iterable<T> getElements() noexcept {
+    return Iterable<T>(elements, count);
+  }
 
   //! Accesses an iterable read-only container of the elements.
   //! \return An iterable read-only container of the elements.
-  ConstIterable<T> getElements() const noexcept { return Iterable<T>(elements, count); }
+  ConstIterable<T> getConstElements() const noexcept {
+    return ConstIterable<T>(elements, count);
+  }
 
   //! Indicates the number of elements in the array.
   //! \return The number of elements in the array.
@@ -75,4 +78,6 @@ class Array final {
   Array& operator=(Array&&) = delete;
 };
 
-}  // namespace FastBVH
+} // namepace impl
+
+} // namespace FastBVH

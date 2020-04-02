@@ -1,4 +1,4 @@
-#include <FastBVH/MortonCurve.h>
+#include <FastBVH/impl/MortonCurve.h>
 
 #include <gtest/gtest.h>
 
@@ -312,7 +312,7 @@ TYPED_TEST(MortonCurveTest, GenerateCodes) {
 
   Testing::BoxConverter<TypeParam> box_converter;
 
-  MortonCurve<TypeParam> morton_curve;
+  impl::MortonCurve<TypeParam> morton_curve;
 
   auto code_array = morton_curve(ConstIterable<Testing::Primitive<TypeParam>>(p, 3), box_converter);
 

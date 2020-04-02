@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.1.3)
 
 project(Fast_BVH LANGUAGES CXX)
 
-option(FASTBVH_BUILD_EXAMPLES "Whether or not to build the example programs." ON)
-option(FASTBVH_BUILD_TESTS    "Whether or not to build the unit tests." ON)
+option(FASTBVH_BUILD_EXAMPLES  "Whether or not to build the example programs." ON)
+option(FASTBVH_BUILD_TESTS     "Whether or not to build the unit tests." ON)
 option(FASTBVH_BUILD_BENCHMARK "Whether or not to build the benchmark." OFF)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(gnu_cxxflags -Wall -Wextra -Werror -Wfatal-errors)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  list(APPEND gnu_cxxflags -ffast-math)
+  list(APPEND gnu_cxxflags -ffast-math -march=native -mtune=native)
 endif(CMAKE_BUILD_TYPE STREQUAL "Release")
 
 if((CMAKE_CXX_COMPILER_ID STREQUAL GNU) OR (CMAKE_CXX_COMPILER_ID MATCHES Clang))

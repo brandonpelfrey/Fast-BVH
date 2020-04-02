@@ -1,37 +1,25 @@
 #pragma once
 
-#include <FastBVH/Types.h>
+#include <FastBVH/impl/Types.h>
 
-#ifndef __NVCC__
 #include <cstdlib>
-#endif
 
 namespace FastBVH {
 
+namespace impl {
+
 //! Allocates memory on the device.
-//! For CPU builds, this is similar to a call to 'malloc'.
-//! For CUDA builds, this allocates memory on the GPU.
 //! \param size The number of bytes to allocate.
 //! \return A pointer to the allocated memory.
 inline void* allocateDeviceMemory(Size size) {
-#ifndef __NVCC__
   return std::malloc(size);
-#else
-  void* ptr = nullptr;
-  auto success = (cudaMalloc(&ptr, size) == cudaSuccess);
-  return success ? ptr : nullptr;
-#endif
 }
 
 //! Releases memory allocated by a call to @ref allocateDeviceMemory.
 //! \param ptr A pointer returned by @ref allocateDeviceMemory.
 //! This may be a null pointer, in which case the function returns early.
 inline void freeDeviceMemory(void* ptr) {
-#ifndef __NVCC__
   std::free(ptr);
-#else
-  cudaFree(ptr);
-#endif
 }
 
 //! Allocates an array of elements.
@@ -52,5 +40,7 @@ template <typename T>
 void freeArray(T* elements, Size) {
   freeDeviceMemory(elements);
 }
+
+} // namespace impl
 
 }  // namespace FastBVH

@@ -47,3 +47,13 @@ target_include_directories(FastBVH_benchmark PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
 set_target_properties(FastBVH_benchmark PROPERTIES
   OUTPUT_NAME run_benchmark
   RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+
+add_executable(FastBVH_MortonCurveBench MortonCurveBench.cpp)
+
+target_compile_options(FastBVH_MortonCurveBench PRIVATE ${cxxflags})
+
+target_link_libraries(FastBVH_MortonCurveBench PRIVATE FastBVH)
+
+set_target_properties(FastBVH_MortonCurveBench PROPERTIES
+  OUTPUT_NAME run_morton_curve_benchmark
+  RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})

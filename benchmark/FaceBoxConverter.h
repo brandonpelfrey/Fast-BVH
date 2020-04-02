@@ -8,7 +8,7 @@
 
 namespace FastBVH {
 
-namespace Benchmark {
+namespace benchmark {
 
 //! \brief Converts a face into a bounding box.
 //! Used by @ref FaceBVH::BVH during the build process.
@@ -96,6 +96,6 @@ class FaceBoxConverter final {
   }
 };
 
-} // namespace Benchmark
+} // namespace benchmark
 
 } // namespace FastBVH

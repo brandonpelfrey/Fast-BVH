@@ -2,7 +2,7 @@
 
 namespace FastBVH {
 
-namespace Benchmark {
+namespace benchmark {
 
 //! \brief A single triangular face from a mesh.
 //! The positions and UV coordinates are indexed.
@@ -15,6 +15,6 @@ struct Face final {
   int uv[3];
 };
 
-} // namespace Benchmark
+} // namespace benchmark
 
 } // namespace FastBVH

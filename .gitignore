@@ -6,3 +6,5 @@ render.ppm
 doxygen/html
 examples/CubeOfSpheres
 examples/ObjFile
+disasm/*.lst
+disasm/config.mk

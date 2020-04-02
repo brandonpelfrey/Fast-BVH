@@ -1,4 +1,4 @@
-#include <FastBVH/MortonCurve.h>
+#include <FastBVH/impl/MortonCodec.h>
 
 #include <gtest/gtest.h>
 
@@ -6,7 +6,7 @@ using namespace FastBVH;
 
 TEST(MortonEncoderTest, Encode32) {
 
-  MortonEncoder<4> encoder;
+  impl::MortonEncoder<4> encoder;
 
   //   0  1  0  0  1  0  0  0  0  0
   //    1  0  0  0  1  1  0  0  0  0
@@ -21,7 +21,7 @@ TEST(MortonEncoderTest, Encode32) {
 
 TEST(MortonEncoderTest, Encode64) {
 
-  MortonEncoder<8> encoder;
+  impl::MortonEncoder<8> encoder;
 
   U64 x = 0b10010'00001000'01000010;
   U64 y = 0b01000'00010010'00000100;
@@ -42,7 +42,7 @@ TEST(MortonEncoderTest, Encode64) {
 
 TEST(MortonEncoderTest, Encode128) {
 
-  MortonEncoder<16> encoder;
+  impl::MortonEncoder<16> encoder;
 
   U128 x = 0b00'00100010'01001000'00000100'00101100'00010010ULL;
   U128 y = 0b10'00001000'00100000'01100000'00000000'01000100ULL;

@@ -34,13 +34,13 @@ struct BBox final {
 
   //! Constructs a bounding box with
   //! a specified minimum and maximum.
-  constexpr BBox(const Vec3& min, const Vec3& max) noexcept : min(min), max(max), extent(max - min) {}
+  inline constexpr BBox(const Vec3& min, const Vec3& max) noexcept : min(min), max(max), extent(max - min) {}
 
   //! Constructs a bounding box around
   //! a single point. The volume occupied
   //! by the box after using this construction
   //! will always be zero.
-  constexpr BBox(const Vec3& p) noexcept : BBox(p, p) {}
+  inline constexpr BBox(const Vec3& p) noexcept : BBox(p, p) {}
 
   //! Expands the volume of the bounding box to fit a new point.
   //! \param p The point to expand the volume for.
@@ -60,7 +60,7 @@ struct BBox final {
 
   //! Gets the center of the bounding box.
   //! \return The center of the bounding box.
-  Vec3 getCenter() const noexcept { return (max + min) * Float(0.5); }
+  inline constexpr Vec3 getCenter() const noexcept { return (max + min) * Float(0.5); }
 
   //! Checks for intersection between a ray and the box.
   //! \param ray The ray being traced.
