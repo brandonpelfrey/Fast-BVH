@@ -36,7 +36,7 @@ class Traverser final {
 };
 
 //! \brief Contains implementation details for the @ref Traverser class.
-namespace TraverserImpl {
+namespace impl {
 
 //! \brief Node for storing state information during traversal.
 template <typename Float>
@@ -47,49 +47,74 @@ struct Traversal final {
   //! Minimum hit time for this node.
   Float mint;
 
-  //! Constructs an uninitialized instance of a traversal context.
-  constexpr Traversal() noexcept {}
-
-  //! Constructs an initialized traversal context.
-  //! \param i_ The index of the node to be traversed.
-  constexpr Traversal(int i_, Float mint_) noexcept : i(i_), mint(mint_) {}
+  //! Creates the traversal node for the root BVH node.
+  inline static constexpr auto root() noexcept {
+    return Traversal { 0, std::numeric_limits<Float>::infinity() };
+  }
 };
 
-}  // namespace TraverserImpl
+//! Used for traversing the BVH without using recursion.
+template <typename Float>
+class TraversalStack final {
+  //! The queue of traversals.
+  std::vector<Traversal<Float>> traversal_vec;
+public:
+  //! Constructs a new traversal stack.
+  //! \param reserve_count The number of items to reserve memory for.
+  TraversalStack(Size reserve_count = 0) {
+    traversal_vec.reserve(reserve_count);
+  }
+  //! Queues an item for traversal.
+  //! \tparam t The traversal to queue.
+  inline void queue(const Traversal<Float>& t) {
+    traversal_vec.emplace_back(t);
+  }
+  //! Removes an item from the stack to be used for traversal.
+  inline auto pop() {
+    auto last = traversal_vec[traversal_vec.size() - 1];
+    traversal_vec.pop_back();
+    return last;
+  }
+  //! Indicates the number of remaining items on the traversal stack.
+  //! As long as this is non-zero, there is still traversal to be done.
+  inline auto remaining() const noexcept {
+    return traversal_vec.size();
+  }
+};
+
+}  // namespace impl
 
 template <typename Float, typename Primitive, typename Intersector, TraverserFlags Flags>
 Intersection<Float, Primitive> Traverser<Float, Primitive, Intersector, Flags>::traverse(const Ray<Float>& ray) const {
-  using Traversal = TraverserImpl::Traversal<Float>;
+
+  using Traversal = impl::Traversal<Float>;
 
   // Intersection result
   Intersection<Float, Primitive> intersection;
 
   // Bounding box min-t/max-t for left/right children at some point in the tree
   Float bbhits[4];
-  int32_t closer, other;
+  uint32_t closer, other;
 
-  // Working set
-  // WARNING : The working set size is relatively small here, should be made dynamic or template-configurable
-  Traversal todo[64];
-  int32_t stackptr = 0;
+  impl::TraversalStack<Float> todo(64);
 
-  // "Push" on the root node to the working set
-  todo[stackptr].i = 0;
-  todo[stackptr].mint = -9999999.f;
+  todo.queue(Traversal::root());
 
   const auto nodes = bvh.getNodes();
 
   auto build_prims = bvh.getPrimitives();
 
-  while (stackptr >= 0) {
+  while (todo.remaining()) {
+
     // Pop off the next node to work on.
-    int ni = todo[stackptr].i;
-    Float near = todo[stackptr].mint;
-    stackptr--;
-    const auto& node(nodes[ni]);
+    auto traversal_node = todo.pop();
+    const auto& node = nodes[traversal_node.i];
+    auto near = traversal_node.mint;
 
     // If this node is further than the closest found intersection, continue
-    if (near > intersection.t) continue;
+    if (near > intersection.t) {
+      continue;
+    }
 
     // Is leaf -> Intersect
     if (node.isLeaf()) {
@@ -128,18 +153,15 @@ Intersection<Float, Primitive> Traverser<Float, Primitive, Intersector, Flags>::
         // we'll check the further-awar node later...
 
         // Push the farther first
-        todo[++stackptr] = Traversal(other, bbhits[2]);
+        todo.queue(Traversal { other, bbhits[2] });
 
         // And now the closer (with overlap test)
-        todo[++stackptr] = Traversal(closer, bbhits[0]);
-      }
+        todo.queue(Traversal { closer, bbhits[0] });
 
-      else if (hitc0) {
-        todo[++stackptr] = Traversal(node.lower_node, bbhits[0]);
-      }
-
-      else if (hitc1) {
-        todo[++stackptr] = Traversal(node.upper_node, bbhits[2]);
+      } else if (hitc0) {
+        todo.queue(Traversal { node.lower_node, bbhits[0] });
+      } else if (hitc1) {
+        todo.queue(Traversal { node.upper_node, bbhits[2] });
       }
     }
   }
