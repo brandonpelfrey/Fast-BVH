@@ -6,7 +6,7 @@
 
 namespace FastBVH {
 
-namespace Testing {
+namespace testing {
 
 //! \brief This is a primitive suitable for testing.
 template <typename Float>
@@ -29,6 +29,6 @@ class BoxConverter final {
   BBox<Float> operator()(const Primitive<Float>& p) const noexcept { return BBox<Float>(p.min, p.max); }
 };
 
-}  // namespace Testing
+}  // namespace testing
 
 }  // namespace FastBVH

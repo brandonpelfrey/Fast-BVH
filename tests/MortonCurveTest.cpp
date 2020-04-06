@@ -7,6 +7,7 @@
 #include "Primitive.h"
 
 using namespace FastBVH;
+using namespace FastBVH::testing;
 
 namespace {
 
@@ -85,7 +86,7 @@ TYPED_TEST(MortonCurveTest, GenerateCodes) {
   //
   // These are just pseudo-random test points
   // to ensure that the test is robust.
-  Testing::Primitive<TypeParam> p[3] = {
+  Primitive<TypeParam> p[3] = {
     { { -1.42, -2.69,  3.05 }, {  4.10,   5.32,  8.52 } },
     { { -9.59, -8.11, -4.49 }, { 11.09,  15.67,  9.86 } },
     { {  2.19,  6.98, -5.81 }, {  3.08,   7.89,  6.68 } }
@@ -310,11 +311,11 @@ TYPED_TEST(MortonCurveTest, GenerateCodes) {
   //        --------------------------------------------------------------------------------------------------------------------------------
   //     W: 00110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110110 = 36DB6DB6DB6DB6DB6DB6DB6DB6DB6DB6
 
-  Testing::BoxConverter<TypeParam> box_converter;
+  BoxConverter<TypeParam> box_converter;
 
   impl::MortonCurve<TypeParam> morton_curve;
 
-  auto code_array = morton_curve(ConstIterable<Testing::Primitive<TypeParam>>(p, 3), box_converter);
+  auto code_array = morton_curve(ConstIterable<Primitive<TypeParam>>(p, 3), box_converter);
 
   ASSERT_EQ(code_array.size(), 3);
   EXPECT_EQ(ExpectedCodes<sizeof(TypeParam)>::codes[0], code_array[0]);

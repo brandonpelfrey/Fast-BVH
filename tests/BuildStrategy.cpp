@@ -6,6 +6,7 @@
 #include "Primitive.h"
 
 using namespace FastBVH;
+using namespace FastBVH::testing;
 
 namespace {
 
@@ -27,14 +28,15 @@ using FloatTypes = ::testing::Types<float, double, long double>;
 TYPED_TEST_CASE(BuildStrategyTest, FloatTypes);
 
 TYPED_TEST(BuildStrategyTest, build) {
-  Testing::Primitive<TypeParam> p[3] = {{{1, 2, 3}, {4, 5, 8}}, {{9, 8, 4}, {11, 15, 9}}, {{2, 6, 5}, {3, 7, 6}}};
 
-  std::vector<Testing::Primitive<TypeParam>> primitives;
+  Primitive<TypeParam> p[3] = {{{1, 2, 3}, {4, 5, 8}}, {{9, 8, 4}, {11, 15, 9}}, {{2, 6, 5}, {3, 7, 6}}};
+
+  std::vector<Primitive<TypeParam>> primitives;
   primitives.emplace_back(p[0]);
   primitives.emplace_back(p[1]);
   primitives.emplace_back(p[2]);
 
-  Testing::BoxConverter<TypeParam> box_converter;
+  BoxConverter<TypeParam> box_converter;
 
   BuildStrategy<TypeParam, 0> build_strategy;
 
