@@ -51,61 +51,98 @@ NodeDiv divideNode(const MortonTable<Code>& table, Size i) noexcept {
   // Calculates upper bits, or returns -1
   // if 'k' is out of bounds. Appears in the
   // LBVH paper as 'δ' (lower case delta)
-  auto calc_delta = [&table](int j, int k) {
+  auto calc_delta = [&table](int j, int k) -> int {
+
     if ((k < 0) || (k >= int(table.size()))) {
       return -1;
     }
-    return int(clz(table[j] ^ table[k]));
+
+    auto l_code = table[j];
+    auto r_code = table[k];
+
+    if (l_code == r_code) {
+      return clz(j ^ k) + (sizeof(Code) * 8);
+    } else {
+      return clz(l_code ^ r_code);
+    }
   };
 
-  auto d = calc_delta(i, i + 1)
-         - calc_delta(i, i - 1);
+  auto ceilDiv = [](int n, int d) {
+    return (n / d) + ((n % d) ? 1 : 0);
+  };
+
+  auto min = [](int a, int b) {
+    return (a < b) ? a : b;
+  };
+
+  int d = calc_delta(i, i + 1)
+        - calc_delta(i, i - 1);
 
   d = d < 0 ? -1 : 1;
 
-  auto delta_min = calc_delta(i, i - d);
+  int delta_min = calc_delta(i, i - d);
 
-  auto l_max = 128;
+  int l_max = 2;
 
-  while (calc_delta(i, i + (l_max * d)) > delta_min) {
-    l_max *= 4;
+  while (true) {
+
+    int k = i + (l_max * d);
+
+    if (k >= int(table.size())) {
+      break;
+    }
+
+    if (!(calc_delta(i, k) > delta_min)) {
+      break;
+    }
+
+    l_max *= 2;
   }
 
-  auto l = 0;
+  int l = 0;
 
-  for (auto t = l_max / 2; t > 0; t /= 2) {
-    if (calc_delta(i, i + ((l + t) * d)) > delta_min) {
+  for (int div = 2; true; div *= 2) {
+
+    int t = l_max / div;
+
+    int k = i + ((l + t) * d);
+
+    if (calc_delta(i, k) > delta_min) {
       l += t;
     }
-  }
 
-  auto j = i + (l * d);
-
-  if (table[i] == table[j]) {
-    return NodeDiv {
-      i, Size(j), (i + j) / 2
-    };
-  }
-
-  auto delta_node = calc_delta(i, j);
-
-  auto s = 0;
-
-  for (auto t = (l + 1) / 2; t > 0; t = (t + 1) / 2) {
-    if (calc_delta(i, i + ((s + t) * d)) > delta_node) {
-      s += t;
-    }
     if (t == 1) {
       break;
     }
   }
 
-  auto min = [](auto a, auto b) { return (a < b) ? a : b; };
+  int j = i + (l * d);
 
-  auto gamma = i + (s * d) + min(d, 0);
+  int delta_node = calc_delta(i, j);
+
+  int s = 0;
+
+  for (int div = 2; true; div *= 2) {
+
+    int t = ceilDiv(l, div);
+
+    int k = i + ((s + t) * d);
+
+    if (calc_delta(i, k) > delta_node) {
+      s += t;
+    }
+
+    if (div >= l) {
+      break;
+    }
+  }
+
+  int gamma = i + (s * d) + min(d, 0);
 
   return NodeDiv {
-    i, Size(j), gamma
+    Size(i),
+    Size(j),
+    Size(gamma)
   };
 }
 
